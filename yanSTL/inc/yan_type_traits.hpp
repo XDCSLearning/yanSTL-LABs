@@ -105,6 +105,15 @@ template <typename>
 using remove_extent_t = void;
 
 // 返回T的退化类型。
+
 template <typename>
-using decay_t = void;
+struct decay { using type = void; };
+
+/// 这里的 requires 子句可以保证当 T 为函数时，选择此模板进行实例化。
+/// 你也可以自己想一个不使用 requires 的办法。
+template <typename T> requires is_function_v<T>
+struct decay<T> { using type = void; };
+
+template <typename T>
+using decay_t = typename decay<T>::type;
 }
