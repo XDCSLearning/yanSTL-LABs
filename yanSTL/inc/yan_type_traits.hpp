@@ -37,7 +37,7 @@ template <typename T> using add_pointer_t = remove_reference_t<T>*;
 
 // 仅当T1, T2是相同类型时返回真。考虑CV修饰。
 template <typename, typename> inline constexpr bool is_same_v = false;
-template <typename T>         inline constexpr bool is_same_v<T, T> = false;
+template <typename T>         inline constexpr bool is_same_v<T, T> = true;
 
 // 仅当T为Types...中众类型之一时返回真。这不是标准规定的算子。
 template <typename T, typename... Types> inline constexpr bool is_any_of_v = (is_same_v<T, Types> || ...);
@@ -45,9 +45,15 @@ template <typename T, typename... Types> inline constexpr bool is_any_of_v = (is
 // 仅当T不为Types...中众类型之一时返回真。这不是标准规定的算子。
 template <typename T, typename... Types> inline constexpr bool is_none_of_v = !is_any_of_v<T, Types...>;
 
+// 返回对应的不带有CV修饰的类型。
+template <typename T> struct remove_cv                   { using type = T; };
+template <typename T> struct remove_cv<const T>          { using type = T; };
+template <typename T> struct remove_cv<volatile T>       { using type = T; };
+template <typename T> struct remove_cv<const volatile T> { using type = T; };
+template <typename T> using  remove_cv_t = typename remove_cv<T>::type;
 
 // 仅当T为布尔类型、字符类型、整数类型时返回真。
-template <typename T> inline constexpr bool is_integral_v = is_any_of_v<T, bool, char, signed char, unsigned char, char8_t, char16_t, char32_t, short, unsigned short, int, unsigned, long, unsigned long, long long, unsigned long long>;
+template <typename T> inline constexpr bool is_integral_v = is_any_of_v<remove_cv_t<T>, bool, char, signed char, unsigned char, char8_t, char16_t, char32_t, wchar_t, short, unsigned short, int, unsigned, long, unsigned long, long long, unsigned long long>;
 
 // 仅当T具有顶层const修饰时返回真。
 template <typename>   inline constexpr bool is_const_v          = false;
@@ -58,13 +64,16 @@ template <typename>   inline constexpr bool is_volatile_v             = false;
 template <typename T> inline constexpr bool is_volatile_v<volatile T> = true;
 
 // 仅当T为指针时返回真。
-template <typename>   inline constexpr bool is_pointer_v     = false;
-template <typename T> inline constexpr bool is_pointer_v<T*> = true;
+template <typename>   inline constexpr bool is_pointer_v                    = false;
+template <typename T> inline constexpr bool is_pointer_v<T*>                = true;
+template <typename T> inline constexpr bool is_pointer_v<T* const>          = true;
+template <typename T> inline constexpr bool is_pointer_v<T* volatile>       = true;
+template <typename T> inline constexpr bool is_pointer_v<T* const volatile> = true;
 
 // 仅当T为引用时返回真。
 template <typename>   inline constexpr bool is_reference_v      = false;
-template <typename T> inline constexpr bool is_reference_v<T&>  = false;
-template <typename T> inline constexpr bool is_reference_v<T&&> = false;
+template <typename T> inline constexpr bool is_reference_v<T&>  = true;
+template <typename T> inline constexpr bool is_reference_v<T&&> = true;
 
 // 仅当T为函数时返回真。提示：只有U为函数或引用时，is_const_v<const U>返回假。
 template <typename T> inline constexpr bool is_function_v = !is_const_v<const T> && !is_reference_v<T>;
@@ -90,13 +99,6 @@ template <typename T> inline constexpr bool is_move_constructible_v = is_constru
 template <typename T> struct remove_const          { using type = T; };
 template <typename T> struct remove_const<const T> { using type = T; };
 template <typename T> using  remove_const_t = typename remove_const<T>::type;
-
-// 返回对应的不带有CV修饰的类型。
-template <typename T> struct remove_cv                   { using type = T; };
-template <typename T> struct remove_cv<const T>          { using type = T; };
-template <typename T> struct remove_cv<volatile T>       { using type = T; };
-template <typename T> struct remove_cv<const volatile T> { using type = T; };
-template <typename T> using  remove_cv_t = typename remove_cv<T>::type;
 
 // 返回数组T的维度，若非数组返回0。
 template <typename>
