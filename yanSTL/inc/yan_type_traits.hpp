@@ -1,5 +1,3 @@
-#include <xtr1common>
-
 namespace my
 {
 
@@ -101,12 +99,16 @@ template <typename T> struct remove_const<const T> { using type = T; };
 template <typename T> using  remove_const_t = typename remove_const<T>::type;
 
 // 返回数组T的维度，若非数组返回0。
-template <typename>
-inline constexpr size_t rank_v = 0;
+template <typename T>           inline constexpr size_t rank_v       = 0;
+template <typename T, size_t N> inline constexpr size_t rank_v<T[N]> = rank_v<T> + 1;
+template <typename T>           inline constexpr size_t rank_v<T[]>  = rank_v<T> + 1;
 
 // 返回数组T在第I个维度上的大小。
-template <typename, size_t>
-inline constexpr size_t extent_v = 0;
+template <typename T, size_t I>           inline constexpr size_t extent_v          = 0;
+template <typename T, size_t N>           inline constexpr size_t extent_v<T[N], 0> = N;
+template <typename T, size_t I, size_t N> inline constexpr size_t extent_v<T[N], I> = extent_v<T, I - 1>;
+template <typename T, size_t I>           inline constexpr size_t extent_v<T[], I>  = extent_v<T, I - 1>;
+template <typename T>                     inline constexpr size_t extent_v<T[], 0>  = 0;
 
 // 获取数组T的元素的类型。若非数组返回其本身。
 template <typename T>           struct remove_extent       { using type = T; };
@@ -114,15 +116,14 @@ template <typename T>           struct remove_extent<T[]>  { using type = T; };
 template <typename T, size_t N> struct remove_extent<T[N]> { using type = T; };
 template <typename T> using remove_extent_t = typename remove_extent<T>::type;
 
-
+std::decay<int>;
 // 返回T的退化类型。
-template <typename T> concept function = is_function_v<T>;
-template <typename T>           struct decay       { using type = remove_cv_t<T>; };
-template <typename T>           struct decay<T&>   { using type = typename decay<T>::type; };
-template <typename T>           struct decay<T&&>  { using type = typename decay<T>::type; };
-template <typename T>           struct decay<T[]>  { using type = typename decay<add_pointer_t<T>>::type; };
-template <typename T, size_t N> struct decay<T[N]> { using type = typename decay<add_pointer_t<T>>::type; };
-template <function T>           struct decay<T>    { using type = typename decay<add_pointer_t<T>>::type; };
-template <typename T>           using decay_t = typename decay<T>::type;
+template <typename T>                           struct decay       { using type = remove_cv_t<T>; };
+template <typename T>                           struct decay<T&>   { using type = typename decay<T>::type; };
+template <typename T>                           struct decay<T&&>  { using type = typename decay<T>::type; };
+template <typename T>                           struct decay<T[]>  { using type = typename decay<add_pointer_t<T>>::type; };
+template <typename T, size_t N>                 struct decay<T[N]> { using type = typename decay<add_pointer_t<T>>::type; };
+template <typename T> requires is_function_v<T> struct decay<T>    { using type = typename decay<add_pointer_t<T>>::type; };
+template <typename T> using  decay_t = typename decay<T>::type;
 
 }
