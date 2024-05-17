@@ -109,16 +109,20 @@ template <typename, size_t>
 inline constexpr size_t extent_v = 0;
 
 // 获取数组T的元素的类型。若非数组返回其本身。
-template <typename>
-using remove_extent_t = void;
+template <typename T>           struct remove_extent       { using type = T; };
+template <typename T>           struct remove_extent<T[]>  { using type = T; };
+template <typename T, size_t N> struct remove_extent<T[N]> { using type = T; };
+template <typename T> using remove_extent_t = typename remove_extent<T>::type;
+
 
 // 返回T的退化类型。
 template <typename T> concept function = is_function_v<T>;
 template <typename T>           struct decay       { using type = remove_cv_t<T>; };
 template <typename T>           struct decay<T&>   { using type = typename decay<T>::type; };
+template <typename T>           struct decay<T&&>  { using type = typename decay<T>::type; };
 template <typename T>           struct decay<T[]>  { using type = typename decay<add_pointer_t<T>>::type; };
 template <typename T, size_t N> struct decay<T[N]> { using type = typename decay<add_pointer_t<T>>::type; };
 template <function T>           struct decay<T>    { using type = typename decay<add_pointer_t<T>>::type; };
-template <typename T>           using decay_t = remove_cv_t<T>;
+template <typename T>           using decay_t = typename decay<T>::type;
 
 }
