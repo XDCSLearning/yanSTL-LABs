@@ -3,7 +3,7 @@ namespace my
 
 // 仅当T具有可接受Args...类型实参的构造函数时返回真。
 template <typename T, typename... Args>
-inline constexpr bool is_constructible_v = __is_constructible_v(T, Args...);
+inline constexpr bool is_constructible_v = __is_constructible(T, Args...);
 
 
 /// 你需要修改本文件的以下内容。
