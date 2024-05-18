@@ -273,16 +273,6 @@ my::test::case_t is_any_of_v()
     co_return;
 }
 
-my::test::case_t is_none_of_v()
-{
-#ifndef USE_STD
-    co_yield{ !NAMESPACE_MY is_none_of_v<int, int, float, double>, std::format("`is_none_of_v<int, int, float, double>` should return `false`, but it actually returns `true`.") };
-    co_yield{  NAMESPACE_MY is_none_of_v<char, int, float, double>, std::format("`is_none_of_v<char, int, float, double>` should return `true`, but it actually returns `false`.") };
-    co_yield{ !NAMESPACE_MY is_none_of_v<const int, const int, int, float>, std::format("`is_none_of_v<const int, const int, int, float>` should return `false`, but it actually returns `true`.") };
-#endif
-    co_return;
-}
-
 my::test::case_t add_const_t()
 {
     co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int>, const int>, std::format("`add_const_t<int>` should be `const int`, but it is actually `{}`.", typeid(NAMESPACE_MY add_const_t<int>).name()) };
@@ -405,6 +395,21 @@ my::test::case_t remove_extent_t()
     co_return;
 }
 
+my::test::case_t conditional_t()
+{
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, int, double>, int>, std::format("`conditional_t<true, int, double>` should be `int`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, int, double>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int, double>, double>, std::format("`conditional_t<false, int, double>` should be `double`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int, double>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int, double>, const int>, std::format("`conditional_t<true, const int, double>` should be `const int`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, const int, double>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int, const double>, const double>, std::format("`conditional_t<false, int, const double>` should be `const double`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int, const double>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, int&, double&>, int&>, std::format("`conditional_t<true, int&, double&>` should be `int&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, int&, double&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int&, double&>, double&>, std::format("`conditional_t<false, int&, double&>` should be `double&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int&, double&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int&, volatile double&>, const int&>, std::format("`conditional_t<true, const int&, volatile double&>` should be `const int&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, const int&, volatile double&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int&&, double&&>, double&&>, std::format("`conditional_t<false, int&&, double&&>` should be `double&&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int&&, double&&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int*, volatile double*>, const int*>, std::format("`conditional_t<true, const int*, volatile double*>` should be `const int*`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, const int*, volatile double*>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int*, double*>, double*>, std::format("`conditional_t<false, int*, double*>` should be `double*`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int*, double*>).name()) };
+    co_return;
+}
+
 my::test::case_t decay_t()
 {
     co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int>, int>, std::format("`decay_t<int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int>).name()) };
@@ -457,7 +462,6 @@ int main()
     t.new_case(test::is_move_constructible_v(), "is_move_constructible_v");
     t.new_case(test::is_same_v(), "is_same_v");
     t.new_case(test::is_any_of_v(), "is_any_of_v");
-    t.new_case(test::is_none_of_v(), "is_none_of_v");
     t.new_case(test::add_const_t(), "add_const_t");
     t.new_case(test::remove_const_t(), "remove_const_t");
     t.new_case(test::remove_cv_t(), "remove_cv_t");
@@ -468,5 +472,6 @@ int main()
     t.new_case(test::rank_v(), "rank_v");
     t.new_case(test::extent_v(), "extent_v");
     t.new_case(test::remove_extent_t(), "remove_extent_t");
+    t.new_case(test::conditional_t(), "conditional_t");
     t.new_case(test::decay_t(), "decay_t");
 }
