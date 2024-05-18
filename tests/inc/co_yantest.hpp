@@ -77,7 +77,21 @@ public:
             return std::suspend_always{};
         }
         inline void return_void() noexcept {}
-        inline void unhandled_exception() {}
+        inline void unhandled_exception()
+        {
+            this->state = state::FAILED;
+            try { throw; }
+            catch (const std::exception& e)
+            {
+                this->error_message = std::string("Exception: ") + e.what();
+                throw;
+            }
+            catch (...)
+            {
+                this->error_message = "Unknown exception!";
+                throw;
+            }
+        }
     };
 private:
     handle_type coro;
@@ -153,7 +167,19 @@ public:
             }));
         
         auto r = f.wait_for(std::chrono::milliseconds(time_limit));
-        case_t::state state = r == std::future_status::ready ? f.get() : case_t::state::TIMEOUT;
+        case_t::state state = case_t::state::FAILED;
+        if (r == std::future_status::ready)
+        {
+            try
+            {
+                state = f.get();
+            } catch (...) {}
+        }
+        else
+        {
+            state = case_t::state::TIMEOUT;
+        }
+
 
         std::cerr << (state == case_t::state::PASSED ? " -- passed " : " -- failed ")
             << std::format("({}ms)", std::chrono::duration_cast<std::chrono::milliseconds>(clock.now() - start).count())
