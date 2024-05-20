@@ -1,5 +1,6 @@
 #pragma once
 #include "yan_type_traits.hpp"
+#include <utility>
 #include <exception>
 #include <format>
 
@@ -62,7 +63,7 @@ private:
           current_allocations(0), total_allocations(0) {}
     ~__alloc_proxy()
     {
-        reset();
+         reset();
     }
 
     __alloc_proxy(const __alloc_proxy&) = delete;
@@ -80,11 +81,11 @@ class allocator
 {
 public:
     // Member types
-    /// 你需要修改在此处的代码。
+     /// 你需要修改在此处的代码。
     using value_type = bool;
     using size_type = bool;
     using difference_type = bool;
-    using propagate_on_container_copy_assignment = struct true_type { static constexpr bool value = true; };
+    using propagate_on_container_move_assignment = std::true_type;
 
     // Member functions
     // 分配可容纳n个元素的未初始化连续存储空间。
@@ -108,7 +109,7 @@ public:
 
     // 判断同一类模板定义的各分配器实例类型的两个对象是否相等。
     template<typename U>
-    constexpr bool operator==(const allocator<U>& u) const & noexcept
+    constexpr bool operator==(const allocator<U>&) const noexcept
     {
         return true;
     }
@@ -160,6 +161,7 @@ struct allocator_traits
         return nullptr;
     }
 
+    // 分配至少可容纳n个元素的未初始化连续存储空间。默认返回{a.allocate(n), n}。
     [[nodiscard]] static constexpr allocation_result<pointer, size_type>
         allocate_at_least(Alloc& a, size_type n)
     {
@@ -193,7 +195,8 @@ struct allocator_traits
         /// 在此处添加你的实现。
     }
 
-    // 获取 allocator 的属性
+    // 调用a的select_on_container_copy_construction函数。
+    // 若Alloc未实现该函数，则返回a。具体含义将在后续实验深究。
     static constexpr Alloc select_on_container_copy_construction(const Alloc& a)
     {
         /// 在此处添加你的实现。
