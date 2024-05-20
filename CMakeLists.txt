@@ -14,10 +14,12 @@ project ("yanSTL")
 include_directories("yanSTL/inc")
 include_directories("tests/inc")
 
-add_executable(hello  "tests/src/test.hello.cpp")
+add_executable(hello "tests/src/test.hello.cpp")
 add_executable(lab1  "tests/src/test.type_traits.cpp")
+add_executable(lab2  "tests/src/test.allocator.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET hello PROPERTY CXX_STANDARD 20)
   set_property(TARGET lab1 PROPERTY CXX_STANDARD 20)
+  set_property(TARGET lab2 PROPERTY CXX_STANDARD 20)
 endif()
