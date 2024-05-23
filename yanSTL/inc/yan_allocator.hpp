@@ -63,7 +63,7 @@ private:
           current_allocations(0), total_allocations(0) {}
     ~__alloc_proxy()
     {
-         reset();
+         //reset();
     }
 
     __alloc_proxy(const __alloc_proxy&) = delete;
