@@ -71,6 +71,7 @@ public:
 case_t alloc_proxy()
 {
 #ifndef USE_STD
+    ap.reset_uncheck();
     co_yield "allocate(10)";
     void* p1 = ap.allocate(10);
     co_yield{ ap.current_allocations == 1, std::format("alloc_proxy's current_allocations should be `1`, but it actually is `{}`", ap.current_allocations) };
@@ -136,6 +137,7 @@ case_t allocator_test()
 {
 #ifndef USE_STD
     allocator<int> alloc;
+    ap.reset_uncheck();
 
     co_yield "allocate(10)";
     auto* p1 = alloc.allocate(10);
@@ -257,6 +259,7 @@ case_t allocator_with_std_traits()
     using Alloc = NAMESPACE_MY allocator<int_wrapper>;
     using T = std::allocator_traits<Alloc>;
     Alloc alloc;
+    ap.reset_uncheck();
     int_wrapper::reset();
     co_yield "allocate raw memory for 5 objects";
     auto* raw_memory = T::allocate(alloc, 5);
@@ -296,6 +299,7 @@ case_t allocator_with_our_traits()
     using Alloc = NAMESPACE_MY allocator<int_wrapper>;
     using T = NAMESPACE_MY allocator_traits<Alloc>;
     Alloc alloc;
+    ap.reset_uncheck();
     int_wrapper::reset();
     co_yield "allocate raw memory for 5 objects";
     auto raw_memory = T::allocate(alloc, 5);
@@ -368,6 +372,7 @@ case_t alloc_at_least()
     my::allocator<int> alloc;
     std::srand(std::time(0));
     int n = 1000;
+    ap.reset_uncheck();
 
     while (n--)
     {

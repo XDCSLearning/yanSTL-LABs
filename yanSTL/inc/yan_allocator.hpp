@@ -46,10 +46,7 @@ public:
         {
             throw memory_leak(current_allocated_bytes, current_allocations);
         }
-        current_allocated_bytes = 0;
-        total_allocated_bytes = 0;
-        current_allocations = 0;
-        total_allocations = 0;
+        reset_uncheck();
     }
 
     size_t current_allocated_bytes; // 当前已分配未回收的字节数
@@ -57,6 +54,13 @@ public:
     size_t current_allocations;     // 尚未回收的分配数（:= allocate与deallocate的调用次数之差）
     size_t total_allocations;       // 总共已分配的分配数 （:= allocate的调用次数）
 
+    void reset_uncheck()
+    {
+        current_allocated_bytes = 0;
+        total_allocated_bytes = 0;
+        current_allocations = 0;
+        total_allocations = 0;
+    }
 private:
     __alloc_proxy()
         : current_allocated_bytes(0), total_allocated_bytes(0),
@@ -65,7 +69,6 @@ private:
     {
          //reset();
     }
-
     __alloc_proxy(const __alloc_proxy&) = delete;
     __alloc_proxy& operator=(const __alloc_proxy&) = delete;
 };
