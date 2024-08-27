@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 #include "yan_type_traits.hpp"
 #include <utility>
 #include <exception>
@@ -206,4 +206,96 @@ struct allocator_traits
         return {};
     }
 };
-}
+}*/
+#include <cstdlib>  
+#include <memory>  
+#include <limits>  
+#include <type_traits>  
+#include <utility>  
+
+namespace my {
+
+    template <typename T>
+    class allocator;
+
+    // 内部分配代理类，用于跟踪分配  
+    class __alloc_proxy {
+    public:
+        static __alloc_proxy& get_instance() {
+            static __alloc_proxy instance; // 单例模式  
+            return instance;
+        }
+
+        void* allocate(std::size_t size) {
+            current_allocations++;
+            total_allocations += size;
+            return std::malloc(size);
+        }
+
+        void deallocate(void* ptr, std::size_t size) {
+            current_allocations--;
+            total_allocations -= size;
+            std::free(ptr);
+        }
+
+    private:
+        __alloc_proxy() = default;
+        ~__alloc_proxy() = default;
+        __alloc_proxy(const __alloc_proxy&) = delete;
+        __alloc_proxy& operator=(const __alloc_proxy&) = delete;
+
+        std::size_t current_allocations = 0;
+        std::size_t total_allocations = 0;
+    };
+
+    template <typename T>
+    class allocator {
+    public:
+        using value_type = T;
+
+        allocator() = default;
+
+        template <typename U>
+        allocator(const allocator<U>&) {}
+
+        [[nodiscard]] T* allocate(std::size_t n) {
+            if (n == 0) return nullptr;
+            return static_cast<T*>(__alloc_proxy::get_instance().allocate(n * sizeof(T)));
+        }
+
+        void deallocate(T* p, std::size_t n) {
+            if (p) __alloc_proxy::get_instance().deallocate(p, n * sizeof(T));
+        }
+
+        template<typename U>
+        bool operator==(const allocator<U>&) const noexcept {
+            return true;
+        }
+
+        template<typename U>
+        bool operator!=(const allocator<U>&) const noexcept {
+            return false;
+        }
+    };
+
+    template <typename Alloc>
+    struct allocator_traits {
+        // 为分配器提供类型辅助  
+        using allocator_type = Alloc;
+        using value_type = typename Alloc::value_type;
+        using size_type = std::size_t;
+
+        static value_type* allocate(Alloc& a, size_type n) {
+            return a.allocate(n);
+        }
+
+        static void deallocate(Alloc& a, value_type* p, size_type n) {
+            a.deallocate(p, n);
+        }
+
+        static constexpr size_type max_size(const Alloc& a) noexcept {
+            return std::numeric_limits<size_type>::max() / sizeof(value_type);
+        }
+    };
+
+} // namespace my
