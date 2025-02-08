@@ -204,7 +204,7 @@ case_t allocator_traits_types()
     co_yield{ std::is_same_v<typename T::template rebind_alloc<double>, std::allocator<double>>,
                std::format("T::rebind_alloc<double> should be std::allocator<double>, but is {}", typename_<typename T::template rebind_alloc<double>>()) };
     co_yield{ std::is_same_v<typename T::template rebind_traits<double>, NAMESPACE_MY allocator_traits<std::allocator<double>>>,
-               std::format("T::rebind_traits<double> should be std::allocator_traits<std::allocator<double>>, but is {}", typename_<NAMESPACE_MY allocator_traits<std::allocator<double>>>()) };
+               std::format("T::rebind_traits<double> should be my::allocator_traits<std::allocator<double>>, but is {}", typename_<NAMESPACE_MY allocator_traits<std::allocator<double>>>()) };
     co_yield nullptr;
     using U = std::allocator_traits<NAMESPACE_MY allocator<int>>;
     co_yield std::format("test with U = {}", typename_<U>());
