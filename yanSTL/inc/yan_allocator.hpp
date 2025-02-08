@@ -9,7 +9,7 @@ namespace my
 
 using size_t = std::size_t;
 
-class __alloc_proxy
+class _alloc_proxy
 {
 public:
     class memory_leak : public std::exception
@@ -21,9 +21,9 @@ public:
             std::exception(std::format("memory leaked with {} bytes in {} allocations", bytes, allocations).c_str()) {}
     };
 
-    static __alloc_proxy& get_instance()
+    static _alloc_proxy& get_instance()
     {
-        static __alloc_proxy instance;
+        static _alloc_proxy instance;
         return instance;
     }
 
@@ -62,15 +62,14 @@ public:
         total_allocations = 0;
     }
 private:
-    __alloc_proxy()
+    _alloc_proxy()
         : current_allocated_bytes(0), total_allocated_bytes(0),
           current_allocations(0), total_allocations(0) {}
-    ~__alloc_proxy()
+    ~_alloc_proxy()
     {
-         //reset();
     }
-    __alloc_proxy(const __alloc_proxy&) = delete;
-    __alloc_proxy& operator=(const __alloc_proxy&) = delete;
+    _alloc_proxy(const _alloc_proxy&) = delete;
+    _alloc_proxy& operator=(const _alloc_proxy&) = delete;
 };
 
 template <class Ptr, class Size = size_t>
@@ -118,9 +117,9 @@ public:
     }
 
 private:
-    static __alloc_proxy& _proxy()
+    static _alloc_proxy& _proxy()
     {
-        return __alloc_proxy::get_instance();
+        return _alloc_proxy::get_instance();
     }
 };
 
