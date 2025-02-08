@@ -275,86 +275,86 @@ my::test::case_t is_any_of_v()
 
 my::test::case_t add_const_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int>, const int>, std::format("`add_const_t<int>` should be `const int`, but it is actually `{}`.", typeid(NAMESPACE_MY add_const_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<const int>, const int>, std::format("`add_const_t<const int>` should be `const int`, but it is actually `{}`.", typeid(NAMESPACE_MY add_const_t<const int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<volatile int>, const volatile int>, std::format("`add_const_t<volatile int>` should be `const volatile int`, but it is actually `{}`.", typeid(NAMESPACE_MY add_const_t<volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int*>, int* const>, std::format("`add_const_t<int*>` should be `int* const`, but it is actually `{}`.", typeid(NAMESPACE_MY add_const_t<int*>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int&>, int&>, std::format("`add_const_t<int&>` should be `int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_const_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int&&>, int&&>, std::format("`add_const_t<int&&>` should be `int&&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_const_t<int&&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int>, const int>, std::format("`add_const_t<int>` should be `const int`, but it is actually `{}`.", typename_<NAMESPACE_MY add_const_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<const int>, const int>, std::format("`add_const_t<const int>` should be `const int`, but it is actually `{}`.", typename_<NAMESPACE_MY add_const_t<const int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<volatile int>, const volatile int>, std::format("`add_const_t<volatile int>` should be `const volatile int`, but it is actually `{}`.", typename_<NAMESPACE_MY add_const_t<volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int*>, int* const>, std::format("`add_const_t<int*>` should be `int* const`, but it is actually `{}`.", typename_<NAMESPACE_MY add_const_t<int*>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int&>, int&>, std::format("`add_const_t<int&>` should be `int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_const_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_const_t<int&&>, int&&>, std::format("`add_const_t<int&&>` should be `int&&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_const_t<int&&>>()) };
     co_return;
 }
 
 my::test::case_t remove_const_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<const int>, int>, std::format("`remove_const_t<const int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_const_t<const int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<const volatile int>, volatile int>, std::format("`remove_const_t<const volatile int>` should be `volatile int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_const_t<const volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<int>, int>, std::format("`remove_const_t<int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_const_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<int* const>, int*>, std::format("`remove_const_t<int* const>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_const_t<int* const>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<int&>, int&>, std::format("`remove_const_t<int&>` should be `int&`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_const_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<const int&>, const int&>, std::format("`remove_const_t<const int&>` should be `const int&`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_const_t<const int&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<const int>, int>, std::format("`remove_const_t<const int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_const_t<const int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<const volatile int>, volatile int>, std::format("`remove_const_t<const volatile int>` should be `volatile int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_const_t<const volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<int>, int>, std::format("`remove_const_t<int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_const_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<int* const>, int*>, std::format("`remove_const_t<int* const>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_const_t<int* const>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<int&>, int&>, std::format("`remove_const_t<int&>` should be `int&`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_const_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_const_t<const int&>, const int&>, std::format("`remove_const_t<const int&>` should be `const int&`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_const_t<const int&>>()) };
     co_return;
 }
 
 my::test::case_t remove_cv_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<const int>, int>, std::format("`remove_cv_t<const int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_cv_t<const int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<volatile int>, int>, std::format("`remove_cv_t<volatile int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_cv_t<volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<const volatile int>, int>, std::format("`remove_cv_t<const volatile int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_cv_t<const volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<int>, int>, std::format("`remove_cv_t<int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_cv_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<int* const volatile>, int*>, std::format("`remove_cv_t<int* const volatile>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_cv_t<int* const volatile>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<int&>, int&>, std::format("`remove_cv_t<int&>` should be `int&`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_cv_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<const int&>, const int&>, std::format("`remove_cv_t<const int&>` should be `const int&`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_cv_t<const int&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<const int>, int>, std::format("`remove_cv_t<const int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_cv_t<const int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<volatile int>, int>, std::format("`remove_cv_t<volatile int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_cv_t<volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<const volatile int>, int>, std::format("`remove_cv_t<const volatile int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_cv_t<const volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<int>, int>, std::format("`remove_cv_t<int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_cv_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<int* const volatile>, int*>, std::format("`remove_cv_t<int* const volatile>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_cv_t<int* const volatile>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<int&>, int&>, std::format("`remove_cv_t<int&>` should be `int&`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_cv_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_cv_t<const int&>, const int&>, std::format("`remove_cv_t<const int&>` should be `const int&`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_cv_t<const int&>>()) };
     co_return;
 }
 
 my::test::case_t remove_reference_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int&>, int>, std::format("`remove_reference_t<int&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_reference_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<const int&>, const int>, std::format("`remove_reference_t<const int&>` should be `const int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_reference_t<const int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int&&>, int>, std::format("`remove_reference_t<int&&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_reference_t<int&&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<const int&&>, const int>, std::format("`remove_reference_t<const int&&>` should be `const int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_reference_t<const int&&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int>, int>, std::format("`remove_reference_t<int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_reference_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int*>, int*>, std::format("`remove_reference_t<int*>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_reference_t<int*>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int* const&>, int* const>, std::format("`remove_reference_t<int* const&>` should be `int* const`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_reference_t<int* const&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int&>, int>, std::format("`remove_reference_t<int&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_reference_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<const int&>, const int>, std::format("`remove_reference_t<const int&>` should be `const int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_reference_t<const int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int&&>, int>, std::format("`remove_reference_t<int&&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_reference_t<int&&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<const int&&>, const int>, std::format("`remove_reference_t<const int&&>` should be `const int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_reference_t<const int&&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int>, int>, std::format("`remove_reference_t<int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_reference_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int*>, int*>, std::format("`remove_reference_t<int*>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_reference_t<int*>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_reference_t<int* const&>, int* const>, std::format("`remove_reference_t<int* const&>` should be `int* const`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_reference_t<int* const&>>()) };
     co_return;
 }
 
 my::test::case_t add_lvalue_reference_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<int>, int&>, std::format("`add_lvalue_reference_t<int>` should be `int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const int>, const int&>, std::format("`add_lvalue_reference_t<const int>` should be `const int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<const int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<volatile int>, volatile int&>, std::format("`add_lvalue_reference_t<volatile int>` should be `volatile int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const volatile int>, const volatile int&>, std::format("`add_lvalue_reference_t<const volatile int>` should be `const volatile int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<const volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<int&>, int&>, std::format("`add_lvalue_reference_t<int&>` should be `int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const int&>, const int&>, std::format("`add_lvalue_reference_t<const int&>` should be `const int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<const int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<volatile int&>, volatile int&>, std::format("`add_lvalue_reference_t<volatile int&>` should be `volatile int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<volatile int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const volatile int&>, const volatile int&>, std::format("`add_lvalue_reference_t<const volatile int&>` should be `const volatile int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_lvalue_reference_t<const volatile int&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<int>, int&>, std::format("`add_lvalue_reference_t<int>` should be `int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const int>, const int&>, std::format("`add_lvalue_reference_t<const int>` should be `const int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<const int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<volatile int>, volatile int&>, std::format("`add_lvalue_reference_t<volatile int>` should be `volatile int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const volatile int>, const volatile int&>, std::format("`add_lvalue_reference_t<const volatile int>` should be `const volatile int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<const volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<int&>, int&>, std::format("`add_lvalue_reference_t<int&>` should be `int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const int&>, const int&>, std::format("`add_lvalue_reference_t<const int&>` should be `const int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<const int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<volatile int&>, volatile int&>, std::format("`add_lvalue_reference_t<volatile int&>` should be `volatile int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<volatile int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_lvalue_reference_t<const volatile int&>, const volatile int&>, std::format("`add_lvalue_reference_t<const volatile int&>` should be `const volatile int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_lvalue_reference_t<const volatile int&>>()) };
     co_return;
 }
 
 my::test::case_t add_rvalue_reference_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<int>, int&&>, std::format("`add_rvalue_reference_t<int>` should be `int&&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const int>, const int&&>, std::format("`add_rvalue_reference_t<const int>` should be `const int&&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<const int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<volatile int>, volatile int&&>, std::format("`add_rvalue_reference_t<volatile int>` should be `volatile int&&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const volatile int>, const volatile int&&>, std::format("`add_rvalue_reference_t<const volatile int>` should be `const volatile int&&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<const volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<int&>, int&>, std::format("`add_rvalue_reference_t<int&>` should be `int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const int&>, const int&>, std::format("`add_rvalue_reference_t<const int&>` should be `const int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<const int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<volatile int&>, volatile int&>, std::format("`add_rvalue_reference_t<volatile int&>` should be `volatile int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<volatile int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const volatile int&>, const volatile int&>, std::format("`add_rvalue_reference_t<const volatile int&>` should be `const volatile int&`, but it is actually `{}`.", typeid(NAMESPACE_MY add_rvalue_reference_t<const volatile int&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<int>, int&&>, std::format("`add_rvalue_reference_t<int>` should be `int&&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const int>, const int&&>, std::format("`add_rvalue_reference_t<const int>` should be `const int&&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<const int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<volatile int>, volatile int&&>, std::format("`add_rvalue_reference_t<volatile int>` should be `volatile int&&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const volatile int>, const volatile int&&>, std::format("`add_rvalue_reference_t<const volatile int>` should be `const volatile int&&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<const volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<int&>, int&>, std::format("`add_rvalue_reference_t<int&>` should be `int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const int&>, const int&>, std::format("`add_rvalue_reference_t<const int&>` should be `const int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<const int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<volatile int&>, volatile int&>, std::format("`add_rvalue_reference_t<volatile int&>` should be `volatile int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<volatile int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_rvalue_reference_t<const volatile int&>, const volatile int&>, std::format("`add_rvalue_reference_t<const volatile int&>` should be `const volatile int&`, but it is actually `{}`.", typename_<NAMESPACE_MY add_rvalue_reference_t<const volatile int&>>()) };
     co_return;
 }
 
 my::test::case_t add_pointer_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<int>, int*>, std::format("`add_pointer_t<int>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const int>, const int*>, std::format("`add_pointer_t<const int>` should be `const int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<const int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<volatile int>, volatile int*>, std::format("`add_pointer_t<volatile int>` should be `volatile int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const volatile int>, const volatile int*>, std::format("`add_pointer_t<const volatile int>` should be `const volatile int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<const volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<int&>, int*>, std::format("`add_pointer_t<int&>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const int&>, const int*>, std::format("`add_pointer_t<const int&>` should be `const int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<const int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<volatile int&>, volatile int*>, std::format("`add_pointer_t<volatile int&>` should be `volatile int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<volatile int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const volatile int&>, const volatile int*>, std::format("`add_pointer_t<const volatile int&>` should be `const volatile int*`, but it is actually `{}`.", typeid(NAMESPACE_MY add_pointer_t<const volatile int&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<int>, int*>, std::format("`add_pointer_t<int>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const int>, const int*>, std::format("`add_pointer_t<const int>` should be `const int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<const int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<volatile int>, volatile int*>, std::format("`add_pointer_t<volatile int>` should be `volatile int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const volatile int>, const volatile int*>, std::format("`add_pointer_t<const volatile int>` should be `const volatile int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<const volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<int&>, int*>, std::format("`add_pointer_t<int&>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const int&>, const int*>, std::format("`add_pointer_t<const int&>` should be `const int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<const int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<volatile int&>, volatile int*>, std::format("`add_pointer_t<volatile int&>` should be `volatile int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<volatile int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY add_pointer_t<const volatile int&>, const volatile int*>, std::format("`add_pointer_t<const volatile int&>` should be `const volatile int*`, but it is actually `{}`.", typename_<NAMESPACE_MY add_pointer_t<const volatile int&>>()) };
     co_return;
 }
 
@@ -385,58 +385,58 @@ my::test::case_t extent_v()
 
 my::test::case_t remove_extent_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int>, int>, std::format("`remove_extent_t<int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_extent_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[10]>, int>, std::format("`remove_extent_t<int[10]>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_extent_t<int[10]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[]> , int>, std::format("`remove_extent_t<int[]>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_extent_t<int[]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[10][5]>, int[5]>, std::format("`remove_extent_t<int[10][5]>` should be `int[5]`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_extent_t<int[10][5]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<const int[10]>, const int>, std::format("`remove_extent_t<const int[10]>` should be `const int`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_extent_t<const int[10]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[2][3][4]>, int[3][4]>, std::format("`remove_extent_t<int[2][3][4]>` should be `int[3][4]`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_extent_t<int[2][3][4]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[][5]>, int[5]>, std::format("`remove_extent_t<int[][5]>` should be `int[5]`, but it is actually `{}`.", typeid(NAMESPACE_MY remove_extent_t<int[][5]>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int>, int>, std::format("`remove_extent_t<int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_extent_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[10]>, int>, std::format("`remove_extent_t<int[10]>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_extent_t<int[10]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[]> , int>, std::format("`remove_extent_t<int[]>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_extent_t<int[]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[10][5]>, int[5]>, std::format("`remove_extent_t<int[10][5]>` should be `int[5]`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_extent_t<int[10][5]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<const int[10]>, const int>, std::format("`remove_extent_t<const int[10]>` should be `const int`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_extent_t<const int[10]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[2][3][4]>, int[3][4]>, std::format("`remove_extent_t<int[2][3][4]>` should be `int[3][4]`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_extent_t<int[2][3][4]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY remove_extent_t<int[][5]>, int[5]>, std::format("`remove_extent_t<int[][5]>` should be `int[5]`, but it is actually `{}`.", typename_<NAMESPACE_MY remove_extent_t<int[][5]>>()) };
     co_return;
 }
 
 my::test::case_t conditional_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, int, double>, int>, std::format("`conditional_t<true, int, double>` should be `int`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, int, double>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int, double>, double>, std::format("`conditional_t<false, int, double>` should be `double`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int, double>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int, double>, const int>, std::format("`conditional_t<true, const int, double>` should be `const int`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, const int, double>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int, const double>, const double>, std::format("`conditional_t<false, int, const double>` should be `const double`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int, const double>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, int&, double&>, int&>, std::format("`conditional_t<true, int&, double&>` should be `int&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, int&, double&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int&, double&>, double&>, std::format("`conditional_t<false, int&, double&>` should be `double&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int&, double&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int&, volatile double&>, const int&>, std::format("`conditional_t<true, const int&, volatile double&>` should be `const int&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, const int&, volatile double&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int&&, double&&>, double&&>, std::format("`conditional_t<false, int&&, double&&>` should be `double&&`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int&&, double&&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int*, volatile double*>, const int*>, std::format("`conditional_t<true, const int*, volatile double*>` should be `const int*`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<true, const int*, volatile double*>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int*, double*>, double*>, std::format("`conditional_t<false, int*, double*>` should be `double*`, but it is actually {}.", typeid(NAMESPACE_MY conditional_t<false, int*, double*>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, int, double>, int>, std::format("`conditional_t<true, int, double>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<true, int, double>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int, double>, double>, std::format("`conditional_t<false, int, double>` should be `double`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<false, int, double>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int, double>, const int>, std::format("`conditional_t<true, const int, double>` should be `const int`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<true, const int, double>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int, const double>, const double>, std::format("`conditional_t<false, int, const double>` should be `const double`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<false, int, const double>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, int&, double&>, int&>, std::format("`conditional_t<true, int&, double&>` should be `int&`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<true, int&, double&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int&, double&>, double&>, std::format("`conditional_t<false, int&, double&>` should be `double&`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<false, int&, double&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int&, volatile double&>, const int&>, std::format("`conditional_t<true, const int&, volatile double&>` should be `const int&`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<true, const int&, volatile double&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int&&, double&&>, double&&>, std::format("`conditional_t<false, int&&, double&&>` should be `double&&`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<false, int&&, double&&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<true, const int*, volatile double*>, const int*>, std::format("`conditional_t<true, const int*, volatile double*>` should be `const int*`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<true, const int*, volatile double*>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY conditional_t<false, int*, double*>, double*>, std::format("`conditional_t<false, int*, double*>` should be `double*`, but it is actually `{}`.", typename_<NAMESPACE_MY conditional_t<false, int*, double*>>()) };
     co_return;
 }
 
 my::test::case_t decay_t()
 {
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int>, int>, std::format("`decay_t<int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int>, int>, std::format("`decay_t<const int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int>, int>, std::format("`decay_t<volatile int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int>, int>, std::format("`decay_t<const volatile int>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const volatile int>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int[]>, int*>, std::format("`decay_t<int[]>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int[]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int[5]>, int*>, std::format("`decay_t<int[5]>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int[5]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int()>, int(*)()>, std::format("`decay_t<int()()>` should be `int(*)()`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int(*)()>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int(&)[5]>, int*>, std::format("`decay_t<int(&)[5]>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int(&)[5]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int(&&)[5]>, int*>, std::format("`decay_t<int(&&)[5]>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int(&&)[5]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int(&)[5]>, const int*>, std::format("`decay_t<const int(&)[5]>` should be `const int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const int(&)[5]>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int*>, int*>, std::format("`decay_t<int*>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int*>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int*>, const int*>, std::format("`decay_t<const int*>` should be `const int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const int*>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int*>, volatile int*>, std::format("`decay_t<volatile int*>` should be `volatile int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<volatile int*>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int*>, const volatile int*>, std::format("`decay_t<const volatile int*>` should be `const volatile int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const volatile int*>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int* const>, int*>, std::format("`decay_t<int* const>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int* const>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int* volatile>, int*>, std::format("`decay_t<int* volatile>` should be `int*`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int* volatile>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int* const volatile>, int*>, std::format("`decay_t<int*>` should be `int* const volatile`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int* const volatile>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int&>, int>, std::format("`decay_t<int&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int&>, int>, std::format("`decay_t<const int&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int&>, int>, std::format("`decay_t<volatile int&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<volatile int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int&>, int>, std::format("`decay_t<const volatile int&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const volatile int&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int&&>, int>, std::format("`decay_t<int&&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<int&&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int&&>, int>, std::format("`decay_t<const int&&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const int&&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int&&>, int>, std::format("`decay_t<volatile int&&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<volatile int&&>).name()) };
-    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int&&>, int>, std::format("`decay_t<const volatile int&&>` should be `int`, but it is actually `{}`.", typeid(NAMESPACE_MY decay_t<const volatile int&&>).name()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int>, int>, std::format("`decay_t<int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int>, int>, std::format("`decay_t<const int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int>, int>, std::format("`decay_t<volatile int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int>, int>, std::format("`decay_t<const volatile int>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const volatile int>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int[]>, int*>, std::format("`decay_t<int[]>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int[]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int[5]>, int*>, std::format("`decay_t<int[5]>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int[5]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int()>, int(*)()>, std::format("`decay_t<int()()>` should be `int(*)()`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int(*)()>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int(&)[5]>, int*>, std::format("`decay_t<int(&)[5]>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int(&)[5]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int(&&)[5]>, int*>, std::format("`decay_t<int(&&)[5]>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int(&&)[5]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int(&)[5]>, const int*>, std::format("`decay_t<const int(&)[5]>` should be `const int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const int(&)[5]>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int*>, int*>, std::format("`decay_t<int*>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int*>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int*>, const int*>, std::format("`decay_t<const int*>` should be `const int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const int*>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int*>, volatile int*>, std::format("`decay_t<volatile int*>` should be `volatile int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<volatile int*>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int*>, const volatile int*>, std::format("`decay_t<const volatile int*>` should be `const volatile int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const volatile int*>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int* const>, int*>, std::format("`decay_t<int* const>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int* const>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int* volatile>, int*>, std::format("`decay_t<int* volatile>` should be `int*`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int* volatile>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int* const volatile>, int*>, std::format("`decay_t<int*>` should be `int* const volatile`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int* const volatile>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int&>, int>, std::format("`decay_t<int&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int&>, int>, std::format("`decay_t<const int&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int&>, int>, std::format("`decay_t<volatile int&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<volatile int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int&>, int>, std::format("`decay_t<const volatile int&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const volatile int&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<int&&>, int>, std::format("`decay_t<int&&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<int&&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const int&&>, int>, std::format("`decay_t<const int&&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const int&&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<volatile int&&>, int>, std::format("`decay_t<volatile int&&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<volatile int&&>>()) };
+    co_yield{ std::is_same_v<NAMESPACE_MY decay_t<const volatile int&&>, int>, std::format("`decay_t<const volatile int&&>` should be `int`, but it is actually `{}`.", typename_<NAMESPACE_MY decay_t<const volatile int&&>>()) };
 
     co_return;
 }

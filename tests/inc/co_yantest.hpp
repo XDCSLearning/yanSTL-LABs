@@ -221,5 +221,28 @@ public:
         return *this;
     }
 };
+
+
+template <typename T>
+constexpr std::string typename_()
+{
+    std::string ret;
+    if constexpr (std::is_const_v<std::remove_reference_t<T>>)
+    {
+        ret += "const ";
+    }
+    if constexpr (std::is_volatile_v<std::remove_reference_t<T>>) {
+        ret += "volatile ";
+    }
+    ret += typeid(std::remove_cv_t<std::remove_reference_t<T>>).name();
+    if constexpr (std::is_lvalue_reference_v<T>) {
+        ret += "(&)";
+    }
+    if constexpr (std::is_rvalue_reference_v<T>) {
+        ret += "(&&)";
+    }
+    return ret;
+}
+
     } // namespace my::test
 } // namespace my
