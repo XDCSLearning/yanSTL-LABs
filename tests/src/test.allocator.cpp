@@ -16,7 +16,7 @@ namespace my
     namespace test
     {
 
-auto& ap = __alloc_proxy::get_instance();
+auto& ap = _alloc_proxy::get_instance();
 
 template <typename T>
 class shit_allocator
@@ -124,7 +124,7 @@ case_t alloc_proxy()
         ap.reset();
         co_yield{ false, "reset should have thrown memory_leak exception, but it did not" };
     }
-    catch (const __alloc_proxy::memory_leak&) {}
+    catch (const _alloc_proxy::memory_leak&) {}
     co_yield "deallocate(10) and reset";
     ap.deallocate(p4, 10);
     ap.reset();
