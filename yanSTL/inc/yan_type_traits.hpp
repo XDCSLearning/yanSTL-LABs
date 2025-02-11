@@ -3,115 +3,115 @@
 namespace my
 {
 
-// ½öµ±T¾ßÓĞ¿É½ÓÊÜArgs...ÀàĞÍÊµ²ÎµÄ¹¹Ôìº¯ÊıÊ±·µ»ØÕæ¡£
+// ä»…å½“Tå…·æœ‰å¯æ¥å—Args...ç±»å‹å®å‚çš„æ„é€ å‡½æ•°æ—¶è¿”å›çœŸã€‚
 template <typename T, typename... Args>
 inline constexpr bool is_constructible_v = __is_constructible(T, Args...);
 
 
-/// ÄãĞèÒªĞŞ¸Ä±¾ÎÄ¼şµÄÒÔÏÂÄÚÈİ¡£
+/// ä½ éœ€è¦ä¿®æ”¹æœ¬æ–‡ä»¶çš„ä»¥ä¸‹å†…å®¹ã€‚
 
-// ½öµ±TÎªvoidÊ±·µ»ØÕæ¡£
+// ä»…å½“Tä¸ºvoidæ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_void_v = false;
 
-// ½öµ±TÎª²¼¶ûÀàĞÍ¡¢×Ö·ûÀàĞÍ¡¢ÕûÊıÀàĞÍÊ±·µ»ØÕæ¡£
+// ä»…å½“Tä¸ºå¸ƒå°”ç±»å‹ã€å­—ç¬¦ç±»å‹ã€æ•´æ•°ç±»å‹æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_integral_v = false;
 
-// ½öµ±T¾ßÓĞ¶¥²ãvolatileĞŞÊÎÊ±·µ»ØÕæ¡£
+// ä»…å½“Tå…·æœ‰é¡¶å±‚volatileä¿®é¥°æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_volatile_v = false;
 
-// ½öµ±TÎªÖ¸ÕëÊ±·µ»ØÕæ¡£
+// ä»…å½“Tä¸ºæŒ‡é’ˆæ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_pointer_v = false;
 
-// ½öµ±TÎªÒıÓÃÊ±·µ»ØÕæ¡£
+// ä»…å½“Tä¸ºå¼•ç”¨æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_reference_v = false;
 
-// ½öµ±TÎªº¯ÊıÊ±·µ»ØÕæ¡£ÌáÊ¾£ºÖ»ÓĞUÎªº¯Êı»òÒıÓÃÊ±£¬is_const_v<const U>·µ»Ø¼Ù¡£
+// ä»…å½“Tä¸ºå‡½æ•°æ—¶è¿”å›çœŸã€‚æç¤ºï¼šåªæœ‰Uä¸ºå‡½æ•°æˆ–å¼•ç”¨æ—¶ï¼Œis_const_v<const U>è¿”å›å‡ã€‚
 template <typename T>
 inline constexpr bool is_function_v = false;
 
-// ½öµ±TÎª³ıÁËvoid¡¢º¯Êı¡¢ÒıÓÃÒÔÍâµÄÈÎºÎÀàĞÍÊ±·µ»ØÕæ¡£
+// ä»…å½“Tä¸ºé™¤äº†voidã€å‡½æ•°ã€å¼•ç”¨ä»¥å¤–çš„ä»»ä½•ç±»å‹æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_object_v = false;
 
-// ½öµ±TÎªÔ­ÉúÊı×éÊ±·µ»ØÕæ¡£
+// ä»…å½“Tä¸ºåŸç”Ÿæ•°ç»„æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_array_v = false;
 
-// ½öµ±TÄÜÍê³ÉÄ¬ÈÏ¹¹ÔìÊ±·µ»ØÕæ¡£
+// ä»…å½“Tèƒ½å®Œæˆé»˜è®¤æ„é€ æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_default_constructible_v = false;
 
-// ½öµ±TÄÜÍê³É¿½±´¹¹ÔìÊ±·µ»ØÕæ¡£
+// ä»…å½“Tèƒ½å®Œæˆæ‹·è´æ„é€ æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_copy_constructible_v = false;
 
-// ½öµ±TÄÜÍê³ÉÒÆ¶¯¹¹ÔìÊ±·µ»ØÕæ¡£
+// ä»…å½“Tèƒ½å®Œæˆç§»åŠ¨æ„é€ æ—¶è¿”å›çœŸã€‚
 template <typename T>
 inline constexpr bool is_move_constructible_v = false;
 
-// ½öµ±T1, T2ÊÇÏàÍ¬ÀàĞÍÊ±·µ»ØÕæ¡£¿¼ÂÇCVĞŞÊÎ¡£
+// ä»…å½“T1, T2æ˜¯ç›¸åŒç±»å‹æ—¶è¿”å›çœŸã€‚è€ƒè™‘CVä¿®é¥°ã€‚
 template <typename T1, typename T2>
 inline constexpr bool is_same_v = false;
 
-// ½öµ±TÎªTypes...ÖĞÖÚÀàĞÍÖ®Ò»Ê±·µ»ØÕæ¡£Õâ²»ÊÇ±ê×¼¹æ¶¨µÄËã×Ó¡£
+// ä»…å½“Tä¸ºTypes...ä¸­ä¼—ç±»å‹ä¹‹ä¸€æ—¶è¿”å›çœŸã€‚è¿™ä¸æ˜¯æ ‡å‡†è§„å®šçš„ç®—å­ã€‚
 template <typename T, typename... Types>
 inline constexpr bool is_any_of_v = false;
 
-// ·µ»Ø¶ÔÓ¦µÄ´øÓĞconstĞŞÊÎµÄÀàĞÍ¡£
+// è¿”å›å¯¹åº”çš„å¸¦æœ‰constä¿®é¥°çš„ç±»å‹ã€‚
 template <typename>
 using add_const_t = void;
 
-// ·µ»Ø¶ÔÓ¦µÄ²»´øÓĞconstĞŞÊÎµÄÀàĞÍ¡£
+// è¿”å›å¯¹åº”çš„ä¸å¸¦æœ‰constä¿®é¥°çš„ç±»å‹ã€‚
 template <typename>
 using remove_const_t = void;
 
-// ·µ»Ø¶ÔÓ¦µÄ²»´øÓĞCVĞŞÊÎµÄÀàĞÍ¡£
+// è¿”å›å¯¹åº”çš„ä¸å¸¦æœ‰CVä¿®é¥°çš„ç±»å‹ã€‚
 template <typename>
 using remove_cv_t = void;
 
-// ·µ»Ø¶ÔÓ¦µÄ·ÇÒıÓÃÀàĞÍ¡£
+// è¿”å›å¯¹åº”çš„éå¼•ç”¨ç±»å‹ã€‚
 template <typename>
 using remove_reference_t = void;
 
-// ·µ»Ø¶ÔÓ¦µÄ×óÖµÒıÓÃÀàĞÍ¡£ÊÊÓÃÒıÓÃÕÛµş¹æÔò¡£
+// è¿”å›å¯¹åº”çš„å·¦å€¼å¼•ç”¨ç±»å‹ã€‚é€‚ç”¨å¼•ç”¨æŠ˜å è§„åˆ™ã€‚
 template <typename>
 using add_lvalue_reference_t = void;
 
-// ·µ»Ø¶ÔÓ¦µÄÓÒÖµÒıÓÃÀàĞÍ¡£ÊÊÓÃÒıÓÃÕÛµş¹æÔò¡£
+// è¿”å›å¯¹åº”çš„å³å€¼å¼•ç”¨ç±»å‹ã€‚é€‚ç”¨å¼•ç”¨æŠ˜å è§„åˆ™ã€‚
 template <typename>
 using add_rvalue_reference_t = void;
 
-// ·µ»Ø¶ÔÓ¦µÄ·ÇÒıÓÃÀàĞÍµÄÖ¸Õë¡£
+// è¿”å›å¯¹åº”çš„éå¼•ç”¨ç±»å‹çš„æŒ‡é’ˆã€‚
 template <typename>
 using add_pointer_t = void;
 
-// ·µ»ØÊı×éTµÄÎ¬¶È£¬Èô·ÇÊı×é·µ»Ø0¡£
+// è¿”å›æ•°ç»„Tçš„ç»´åº¦ï¼Œè‹¥éæ•°ç»„è¿”å›0ã€‚
 template <typename T>
 inline constexpr size_t rank_v = 0;
 
-// ·µ»ØÊı×éTÔÚµÚI¸öÎ¬¶ÈÉÏµÄ´óĞ¡¡£
+// è¿”å›æ•°ç»„Tåœ¨ç¬¬Iä¸ªç»´åº¦ä¸Šçš„å¤§å°ã€‚
 template <typename T, size_t I>
 inline constexpr size_t extent_v = 0;
 
-// »ñÈ¡Êı×éTµÄÔªËØµÄÀàĞÍ¡£Èô·ÇÊı×é·µ»ØÆä±¾Éí¡£
+// è·å–æ•°ç»„Tçš„å…ƒç´ çš„ç±»å‹ã€‚è‹¥éæ•°ç»„è¿”å›å…¶æœ¬èº«ã€‚
 template <typename T>
 using remove_extent_t = void;
 
-// µ± B == true Ê±·µ»Ø T£¬·ñÔò·µ»Ø F¡£
+// å½“ B == true æ—¶è¿”å› Tï¼Œå¦åˆ™è¿”å› Fã€‚
 template <bool B, typename T, typename F>
 using conditional_t = void;
 
-// ·µ»ØTµÄÍË»¯ÀàĞÍ¡£
+// è¿”å›Tçš„é€€åŒ–ç±»å‹ã€‚
 template <typename>
 struct decay { using type = void; };
 
-/// ÕâÀïµÄ requires ×Ó¾ä¿ÉÒÔ±£Ö¤µ± T Îªº¯ÊıÊ±£¬Ñ¡Ôñ´ËÄ£°å½øĞĞÊµÀı»¯¡£
-/// ÄãÒ²¿ÉÒÔ×Ô¼ºÏëÒ»¸ö²»Ê¹ÓÃ requires µÄ°ì·¨¡£
+/// è¿™é‡Œçš„ requires å­å¥å¯ä»¥ä¿è¯å½“ T ä¸ºå‡½æ•°æ—¶ï¼Œé€‰æ‹©æ­¤æ¨¡æ¿è¿›è¡Œå®ä¾‹åŒ–ã€‚
+/// ä½ ä¹Ÿå¯ä»¥è‡ªå·±æƒ³ä¸€ä¸ªä¸ä½¿ç”¨ requires çš„åŠæ³•ã€‚
 template <typename T> requires is_function_v<T>
 struct decay<T> { using type = void; };
 
