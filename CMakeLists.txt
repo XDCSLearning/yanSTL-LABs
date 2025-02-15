@@ -3,6 +3,10 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+set(CMAKE_C_COMPILER "gcc")
+set(CMAKE_CXX_COMPILER "g++")
+
+
 # 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -22,7 +26,9 @@ add_executable(lab4  "tests/src/test.memory.cpp")
 add_executable(lab6  "tests/src/test.algorithm.cpp")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  message(CMAKE_CXX_COMPILER_ID:${CMAKE_CXX_COMPILER_ID})
   target_link_libraries(lab1 PRIVATE pthread)
   target_link_libraries(lab2 PRIVATE pthread)
   target_link_libraries(lab4 PRIVATE pthread)
