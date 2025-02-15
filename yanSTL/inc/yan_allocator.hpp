@@ -30,13 +30,27 @@ public:
     // 分配 size 字节的内存
     void* allocate(size_t size)
     {
-        /// 在此处添加你的实现。
-        return nullptr;
+        
+        auto t = ::operator new(size);
+        if(t != nullptr){
+            total_allocated_bytes += size;
+            current_allocated_bytes += size;
+            current_allocations += 1;
+            total_allocations += 1;
+        }
+        return t;
     }
 
     // 回收ptr指向的内存。为了记录，提供应当被回收的字节数。
     void deallocate(void* ptr, size_t size)
     {
+        ::operator delete(ptr 
+#if __cpp_sized_deallocation
+			  , size
+#endif
+        );
+        current_allocated_bytes -= size;
+        current_allocations -= 1;
         /// 在此处添加你的实现。
     }
 
@@ -72,6 +86,7 @@ private:
     _alloc_proxy& operator=(const _alloc_proxy&) = delete;
 };
 
+std::allocator<
 template <class Ptr, class Size = size_t>
 struct allocation_result {
     Ptr ptr;
