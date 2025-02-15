@@ -3,8 +3,8 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-set(CMAKE_C_COMPILER "gcc")
-set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_C_COMPILER "gcc-13")
+set(CMAKE_CXX_COMPILER "g++-13")
 
 
 # 如果支持，请为 MSVC 编译器启用热重载。

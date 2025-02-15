@@ -2,127 +2,6 @@
 
 namespace my
 {
-
-// 仅当T具有可接受Args...类型实参的构造函数时返回真。
-template <typename T, typename... Args>
-inline constexpr bool is_constructible_v = __is_constructible(T, Args...);
-
-
-template <typename T>
-inline constexpr bool is_const_v = false;
-template <typename T>
-inline constexpr bool is_const_v<T const> = false;
-/// 你需要修改本文件的以下内容。
-
-// 仅当T为void时返回真。
-template <typename T>
-inline constexpr bool is_void_v = false;
-
-template <>
-inline constexpr bool is_void_v<void> = true;
-
-// 仅当T为布尔类型、字符类型、整数类型时返回真。
-template <typename T>
-inline constexpr bool is_integral_v = is_any_of_v<remove_cv_t<T>,bool,
-                                                                char, unsigned char, signed char, 
-                                                                short, unsigned short,
-                                                                int, unsigned int,
-                                                                long, unsigned long,
-                                                                long long, unsigned long long>;
-
-// 仅当T具有顶层volatile修饰时返回真。
-template <typename T>
-inline constexpr bool is_volatile_v = false;
-
-template <typename T>
-inline constexpr bool is_volatile_v<volatile T> = true;
-
-// 仅当T为指针时返回真。
-template <typename T>
-inline constexpr bool is_pointer_v = false;
-
-template <typename T>
-inline constexpr bool is_pointer_v<T*> = true;
-
-template <typename T>
-inline constexpr bool is_pointer_v<T* const> = true;
-
-template <typename T>
-inline constexpr bool is_pointer_v<T* volatile> = true;
-
-template <typename T>
-inline constexpr bool is_pointer_v<T* const volatile> = true;
-
-// 仅当T为引用时返回真。
-template <typename T>
-inline constexpr bool is_reference_v = is_any_of_v(remove_cv_t<T>, );
-
-template <typename T>
-inline constexpr bool is_reference_v = is_lvalue_reference<T> || is_rvalue_reference<T>;
-
-template <typename T>
-inline constexpr bool is_lvalue_reference = false;
-
-template <typename T>
-inline constexpr bool is_lvalue_reference<T&> = false;
-
-template <typename T>
-inline constexpr bool is_lvalue_reference<T& volatile> = true;
-
-template <typename T>
-inline constexpr bool is_rvalue_reference = false;
-
-template <typename T>
-inline constexpr bool is_rvalue_reference<T&&> = false;
-
-template <typename T>
-inline constexpr bool is_rvalue_reference<T&& volatile> = true;
-
-
-
-// 仅当T为函数时返回真。提示：只有U为函数或引用时，is_const_v<const U>返回假。
-template <typename T>
-inline constexpr bool is_function_v = !is_reference_v<T> && !is_const_v<T>;
-
-// 仅当T为除了void、函数、引用以外的任何类型时返回真。
-template <typename T>
-inline constexpr bool is_object_v = !(is_function_v<T> ||is_reference_v<T>||is_void_v<T>);
-
-// 仅当T为原生数组时返回真。
-template <typename T>
-inline constexpr bool is_array_v = false;
-
-template <typename T>
-inline constexpr bool is_array_v<T[]> = true;
-template <typename T>
-inline constexpr bool is_array_v<T[] const> = true;
-template <typename T>
-inline constexpr bool is_array_v<T[] volatile> = true;
-
-// 仅当T能完成默认构造时返回真。
-template <typename T>
-inline constexpr bool is_default_constructible_v = false;
-
-std::is_default_constructible<myClass>
-// 仅当T能完成拷贝构造时返回真。
-template <typename T>
-inline constexpr bool is_copy_constructible_v = __is_constructible(T);
-
-// 仅当T能完成移动构造时返回真。
-template <typename T>
-inline constexpr bool is_move_constructible_v = __is_constructible(_T, _T);;
-
-// 仅当T1, T2是相同类型时返回真。考虑CV修饰。
-template <typename, typename>
-inline constexpr bool is_same_v = false;
-
-template<typename Ty>
-inline constexpr bool _is_same_v<Ty, Ty> = true;
-
-// 仅当T为Types...中众类型之一时返回真。这不是标准规定的算子。
-template <typename T, typename... Types>
-inline constexpr bool is_any_of_v = (is_same_v<T, Types> || ...);
-
 // 返回对应的带有const修饰的类型。
 template<typename T>
 struct add_const
@@ -167,8 +46,120 @@ template <class T>
 struct remove_reference<T&> {using type = T;};
 template <class T>
 struct remove_reference<T&&> {using type = T;};
-template <typename>
+template <typename T>
 using remove_reference_t = remove_reference<T>::type;
+
+
+
+// 仅当T具有可接受Args...类型实参的构造函数时返回真。
+template <typename T, typename... Args>
+inline constexpr bool is_constructible_v = __is_constructible(T, Args...);
+
+
+template <typename T>
+inline constexpr bool is_const_v = false;
+template <typename T>
+inline constexpr bool is_const_v<T const> = false;
+/// 你需要修改本文件的以下内容。
+
+// 仅当T为void时返回真。
+template <typename T>
+inline constexpr bool is_void_v = false;
+
+template <>
+inline constexpr bool is_void_v<void> = true;
+
+// 仅当T1, T2是相同类型时返回真。考虑CV修饰。
+template <typename, typename>
+inline constexpr bool is_same_v = false;
+
+template<typename Ty>
+inline constexpr bool is_same_v<Ty, Ty> = true;
+
+// 仅当T为Types...中众类型之一时返回真。这不是标准规定的算子。
+template <typename T, typename... Types>
+inline constexpr bool is_any_of_v = (is_same_v<T, Types> || ...);
+
+// 仅当T为布尔类型、字符类型、整数类型时返回真。
+template <typename T>
+inline constexpr bool is_integral_v = is_any_of_v<remove_cv_t<T>, bool,
+                                                                char, unsigned char, signed char, 
+                                                                short, unsigned short,
+                                                                int, unsigned int,
+                                                                long, unsigned long,
+                                                                long long, unsigned long long>;
+
+// 仅当T具有顶层volatile修饰时返回真。
+template <typename T>
+inline constexpr bool is_volatile_v = false;
+
+template <typename T>
+inline constexpr bool is_volatile_v<volatile T> = true;
+
+// 仅当T为指针时返回真。
+template <typename T>
+inline constexpr bool is_pointer_v = false;
+
+template <typename T>
+inline constexpr bool is_pointer_v<T*> = true;
+
+template <typename T>
+inline constexpr bool is_pointer_v<T* const> = true;
+
+template <typename T>
+inline constexpr bool is_pointer_v<T* volatile> = true;
+
+template <typename T>
+inline constexpr bool is_pointer_v<T* const volatile> = true;
+
+// 仅当T为引用时返回真。
+template <typename T>
+inline constexpr bool is_lvalue_reference = false;
+
+template <typename T>
+inline constexpr bool is_lvalue_reference<T&> = true;
+
+template <typename T>
+inline constexpr bool is_rvalue_reference = false;
+
+template <typename T>
+inline constexpr bool is_rvalue_reference<T&&> = true;
+
+// 仅当T为引用时返回真。
+template <typename T>
+inline constexpr bool is_reference_v = is_lvalue_reference<T> || is_rvalue_reference<T>;
+
+// 仅当T为函数时返回真。提示：只有U为函数或引用时，is_const_v<const U>返回假。
+template <typename T>
+inline constexpr bool is_function_v = !is_reference_v<T> && !is_const_v<T>;
+
+// 仅当T为除了void、函数、引用以外的任何类型时返回真。
+template <typename T>
+inline constexpr bool is_object_v = !(is_function_v<T> ||is_reference_v<T>||is_void_v<T>);
+
+// 仅当T为原生数组时返回真。
+template <typename T>
+inline constexpr bool is_array_v = false;
+template <typename T>
+inline constexpr bool is_array_v<T[]> = true;
+template <typename T>
+inline constexpr bool is_array_v<T[] const> = true;
+template <typename T>
+inline constexpr bool is_array_v<T[] volatile> = true;
+
+// 仅当T能完成默认构造时返回真。
+template <typename T>
+inline constexpr bool is_default_constructible_v = false;
+
+std::is_default_constructible<myClass>
+// 仅当T能完成拷贝构造时返回真。
+template <typename T>
+inline constexpr bool is_copy_constructible_v = __is_constructible(T);
+
+// 仅当T能完成移动构造时返回真。
+template <typename T>
+inline constexpr bool is_move_constructible_v = __is_constructible(T, T);;
+
 
 
 //C++11 __void_t
@@ -177,11 +168,11 @@ using __void_t = void;
 
 template <typename T, typename = void>
 struct __is_referenceable{
-    using value = false;
+    constexpr bool value = false;
 };
 template <typename T>
 struct __is_referenceable<T, __void_t<T&>>{
-    using value = true;
+    constexpr bool value = true;
 };
 
 
@@ -190,10 +181,10 @@ template <typename>
 struct add_lvalue_reference{
     using type = T&;
 };
-template <typename T, bool = __is_referenceable<T>::value>>
+template <typename T, bool = __is_referenceable<T>::value>
 struct __add_lvalue_reference_helper{
     using type = T;
-}
+};
 
 template<typename T>
 struct __add_lvalue_reference_helper<T, true>
