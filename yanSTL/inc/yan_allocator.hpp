@@ -12,13 +12,13 @@ using size_t = std::size_t;
 class _alloc_proxy
 {
 public:
-    class memory_leak : public std::exception
+    class memory_leak : public std::runtime_error
     {
     public:
         memory_leak() :
-            std::exception("memory leak") {}
+            std::runtime_error("memory leak") {}
         memory_leak(size_t bytes, size_t allocations) :
-            std::exception(std::format("memory leaked with {} bytes in {} allocations", bytes, allocations).c_str()) {}
+            std::runtime_error(std::format("memory leaked with {} bytes in {} allocations", bytes, allocations).c_str()) {}
     };
 
     static _alloc_proxy& get_instance()

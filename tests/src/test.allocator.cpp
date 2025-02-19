@@ -1,6 +1,5 @@
 #include "co_yantest.hpp"
 #include "int_wrapper.hpp"
-#include "yan_allocator.hpp"
 #include <memory>
 
 //#define USE_STD
@@ -8,7 +7,9 @@
 #ifdef USE_STD
 #define NAMESPACE_MY ::std::
 #else
+#include "yan_allocator.hpp"
 #define NAMESPACE_MY ::my::
+auto& ap = _alloc_proxy::get_instance();
 #endif
 
 namespace my
@@ -16,7 +17,6 @@ namespace my
     namespace test
     {
 
-auto& ap = _alloc_proxy::get_instance();
 
 template <typename T>
 class shit_allocator
@@ -259,7 +259,9 @@ case_t allocator_with_std_traits()
     using Alloc = NAMESPACE_MY allocator<int_wrapper>;
     using T = std::allocator_traits<Alloc>;
     Alloc alloc;
+#ifndef USE_STD
     ap.reset_uncheck();
+#endif
     auto c = int_wrapper::counter_scope();
     co_yield "allocate raw memory for 5 objects";
     auto* raw_memory = T::allocate(alloc, 5);
@@ -290,7 +292,9 @@ case_t allocator_with_std_traits()
 
     co_yield "deallocate raw memory and reset alloc_proxy";
     T::deallocate(alloc, raw_memory, 5);
+#ifndef USE_STD
     ap.reset();
+#endif
     co_return;
 }
 
@@ -299,7 +303,9 @@ case_t allocator_with_our_traits()
     using Alloc = NAMESPACE_MY allocator<int_wrapper>;
     using T = NAMESPACE_MY allocator_traits<Alloc>;
     Alloc alloc;
+#ifndef USE_STD
     ap.reset_uncheck();
+#endif
     auto c = int_wrapper::counter_scope();
     co_yield "allocate raw memory for 5 objects";
     auto raw_memory = T::allocate(alloc, 5);
@@ -330,7 +336,9 @@ case_t allocator_with_our_traits()
 
     co_yield "deallocate raw memory and reset alloc_proxy";
     T::deallocate(alloc, raw_memory, 5);
+#ifndef USE_STD
     ap.reset();
+#endif
     co_return;
 }
 
