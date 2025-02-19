@@ -7,7 +7,7 @@ template <typename T, typename Deleter>
 class unique_ptr_base {
 public:
 
-    /// ÇëÔÚ´Ë´¦¶¨Òåµ¥¶ÔÏó°æ±¾ºÍÊı×é°æ±¾ unique_ptr µÄ¹²ÓĞ³ÉÔ±¡£
+    /// è¯·åœ¨æ­¤å¤„å®šä¹‰å•å¯¹è±¡ç‰ˆæœ¬å’Œæ•°ç»„ç‰ˆæœ¬ unique_ptr çš„å…±æœ‰æˆå‘˜ã€‚
 
 protected:
     T* ptr_;
@@ -18,20 +18,20 @@ template <typename T, typename Deleter>
 class unique_ptr : public unique_ptr_base<T, Deleter> {
     using Base = unique_ptr_base<T, Deleter>;
 public:
-    using Base::Base; // Ê¹ÓÃ»ùÀà¹¹Ôìº¯Êı
+    using Base::Base; // ä½¿ç”¨åŸºç±»æ„é€ å‡½æ•°
 
-    /// ÇëÔÚ´Ë´¦¶¨Òåµ¥¶ÔÏó°æ±¾ unique_ptr µÄÌØÓĞ³ÉÔ±¡£
+    /// è¯·åœ¨æ­¤å¤„å®šä¹‰å•å¯¹è±¡ç‰ˆæœ¬ unique_ptr çš„ç‰¹æœ‰æˆå‘˜ã€‚
 };
 
 template <typename T, typename Deleter>
 class unique_ptr<T[], Deleter> : public unique_ptr_base<T, Deleter> {
     using Base = unique_ptr_base<T, Deleter>;
 public:
-    using Base::Base; // Ê¹ÓÃ»ùÀà¹¹Ôìº¯Êı
+    using Base::Base; // ä½¿ç”¨åŸºç±»æ„é€ å‡½æ•°
 
-    /// ÇëÔÚ´Ë´¦¶¨ÒåÊı×é°æ±¾ unique_ptr µÄÌØÓĞ³ÉÔ±¡£
+    /// è¯·åœ¨æ­¤å¤„å®šä¹‰æ•°ç»„ç‰ˆæœ¬ unique_ptr çš„ç‰¹æœ‰æˆå‘˜ã€‚
 };
 
-/// »¹ĞèÔÚ´Ë´¦¶¨Òå make_unique º¯Êı¡£
+/// è¿˜éœ€åœ¨æ­¤å¤„å®šä¹‰ make_unique å‡½æ•°ã€‚
 
 } // namespace my

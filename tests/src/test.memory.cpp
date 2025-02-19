@@ -7,6 +7,9 @@
 
 #ifdef USE_STD
 #define NAMESPACE_MY ::std::
+#undef DISMISS_UNIQUE_PTR
+#undef DISMISS_SHARED_AND_WEAK_PTR
+#undef DISMISS_ENABLE_SHARED_FROM_THIS
 #else
 #define NAMESPACE_MY ::my::
 #endif
@@ -16,7 +19,40 @@ namespace my
     namespace test
     {
 
+template <typename T>
+struct custom_allocator {
+    using value_type = T;
+
+    custom_allocator(int* counter = nullptr) : counter(counter) {}
+
+    template <typename U>
+    custom_allocator(const custom_allocator<U>& other) : counter(other.counter) {}
+    
+
+    template <typename U>
+    struct rebind {
+        using other = custom_allocator<U>;
+    };
+
+    T* allocate(std::size_t n) {
+        counter ? (*counter)++ : 0;
+        return static_cast<T*>(::operator new(n * sizeof(T)));
+    }
+
+    void deallocate(T* p, std::size_t n) {
+        counter ? (*counter)-- : 0;
+        ::operator delete(p);
+    }
+
+    int* counter;
+};
+        
+
+
 case_t unique_ptr() {
+#ifdef DISMISS_UNIQUE_PTR
+    co_yield { case_t::state::DISMISSED, "test for `unique_ptr` has been dismissed." };
+#else
     co_yield "Create a unique_ptr p1 with default construction.";
     {
         NAMESPACE_MY unique_ptr<int_wrapper> p1;
@@ -140,10 +176,14 @@ case_t unique_ptr() {
     co_yield{ deleter_called, std::format("Custom deleter should be called on destruction, but it seems not.") };
 
     co_yield nullptr;
+#endif
     co_return;
 }
 
 case_t shared_ptr() {
+#ifdef DISMISS_SHARED_AND_WEAK_PTR
+    co_yield { case_t::state::DISMISSED, "test for `shared_ptr` and `weak_ptr` has been dismissed." };
+#else
     co_yield "Create a shared_ptr `p1` with default construction.";
     {
         NAMESPACE_MY shared_ptr<int_wrapper> p1;
@@ -268,6 +308,34 @@ case_t shared_ptr() {
         std::format("Resource leak detected: `int_wrapper::current_object_count` is `{}` after `p8`/`p9` scope, expected `0`.", int_wrapper::current_object_count) };
     co_yield nullptr;
 
+    co_yield "Test `allocate_shared` with a custom allocator.";
+    {
+        int alloc_counter = 0; // Track allocations and deallocations
+        custom_allocator<int_wrapper> alloc(&alloc_counter);
+
+        co_yield "Create a `shared_ptr` using `allocate_shared` with a custom allocator.";
+        {
+            auto p11 = NAMESPACE_MY allocate_shared<int_wrapper>(alloc, 123);
+            co_yield{ p11 && *p11 == int_wrapper(123),
+                std::format("`p11` should hold `int_wrapper(123)`, but got `{}`.", p11 ? std::to_string((int)(*p11)) : "null") };
+            co_yield{ p11.use_count() == 1,
+                std::format("`p11.use_count()` should be `1`, but got `{}`.", p11.use_count()) };
+            co_yield{ alloc_counter == 1,
+                std::format("There should be 1 time allocator call, but got `{}` time(s).", alloc_counter) };
+
+            co_yield "Copy `p11` to `p12` to verify reference counting.";
+            NAMESPACE_MY shared_ptr<int_wrapper> p12(p11);
+            co_yield{ p11.use_count() == 2 && p12.use_count() == 2,
+                std::format("After copying, `use_count` should be `2`, but got `p11.use_count()`: `{}`, `p12.use_count()`: `{}`.", p11.use_count(), p12.use_count()) };
+        }
+
+        co_yield{ alloc_counter == 0,
+            std::format("After `p11` and `p12` go out of scope, allocator should deallocate all memory, but got `{}` block(s) still alive.", alloc_counter) };
+        co_yield{ int_wrapper::current_object_count == 0,
+            std::format("Resource leak detected: there is {} objects remaining after `allocate_shared` scope, expected `0`.", int_wrapper::current_object_count) };
+    }
+    co_yield nullptr;
+
     bool deleter_called = false;
     {
         auto custom_deleter = [&](int* ptr) { delete ptr; deleter_called = true; };
@@ -281,10 +349,14 @@ case_t shared_ptr() {
         std::format("`Custom deleter` should be called upon `shared_ptr` destruction.") };
 
     co_yield nullptr;
+#endif
     co_return;
 }
 
 case_t weak_ptr() {
+#ifdef DISMISS_SHARED_AND_WEAK_PTR
+    co_yield { case_t::state::DISMISSED, "test for `shared_ptr` and `weak_ptr` has been dismissed." };
+#else
     {
         co_yield "Create a `shared_ptr` using `make_shared` with `int_wrapper(100)`.";
         auto p = NAMESPACE_MY make_shared<int_wrapper>(100);
@@ -361,11 +433,43 @@ case_t weak_ptr() {
             std::format("After self-assignment, `wp5.expired()` should still be `true`.") };
     }
     co_yield nullptr;
+
+    {
+        co_yield "Create two `shared_ptr`s, `p1` and `p2`, with values `int_wrapper(100)` and `int_wrapper(200)` respectively.";
+        auto p1 = NAMESPACE_MY make_shared<int_wrapper>(100);
+        auto p2 = NAMESPACE_MY make_shared<int_wrapper>(200);
+    
+        co_yield "Create two `weak_ptr`s, `wp1` from `p1` and `wp2` from `p2`.";
+        NAMESPACE_MY weak_ptr<int_wrapper> wp1(p1);
+        NAMESPACE_MY weak_ptr<int_wrapper> wp2(p2);
+    
+        co_yield "Create a third `weak_ptr`, `wp3`, from `p1` to share ownership with `wp1`.";
+        NAMESPACE_MY weak_ptr<int_wrapper> wp3(p1);
+    
+        co_yield "Compare `wp1` and `wp3` using `owner_before` to verify shared ownership.";
+        co_yield{ !wp1.owner_before(wp3) && !wp3.owner_before(wp1),
+            std::format("`wp1` and `wp3` should have the same ownership order, but `owner_before` indicates otherwise.") };
+    
+        co_yield "Compare `wp1` and `p1` using `owner_before` to verify shared ownership between `weak_ptr` and `shared_ptr`.";
+        co_yield{ !wp1.owner_before(p1) && !p1.owner_before(wp1),
+            std::format("`wp1` and `p1` should have the same ownership order, but `owner_before` indicates otherwise.") };
+    
+        co_yield "Compare `wp1` and `wp2` using `owner_before` to check ownership order.";
+        bool wp1_before_wp2 = wp1.owner_before(wp2);
+        bool wp2_before_wp1 = wp2.owner_before(wp1);
+        co_yield{ wp1_before_wp2 != wp2_before_wp1,
+            std::format("`wp1` and `wp2` should have a consistent ownership order, but `owner_before` is inconsistent. wp1_before_wp2: {}, wp2_before_wp1: {}", wp1_before_wp2, wp2_before_wp1) };
+    }
+    co_yield nullptr;
+    
+#endif
     co_return;
 }
 
-
 case_t enable_shared_from_this() {
+#ifdef DISMISS_ENABLE_SHARED_FROM_THIS
+    co_yield { case_t::state::DISMISSED, "test for `enable_` has been dismissed." };
+#else
     {
         co_yield "Define a class `MyClass` inheriting from `NAMESPACE_MY enable_shared_from_this<MyClass>`.";
         struct MyClass : public NAMESPACE_MY enable_shared_from_this<MyClass> {
@@ -403,8 +507,215 @@ case_t enable_shared_from_this() {
         }
     }
     co_yield nullptr;
+#endif
     co_return;
 }
+
+case_t type_casting() {
+#ifdef DISMISS_SHARED_AND_WEAK_PTR
+    co_yield { case_t::state::DISMISSED, "type_casting tests dismissed" };
+#else
+    struct Base { 
+        virtual ~Base() = default; 
+        int base_marker = 0xBA5E;
+    };
+    
+    struct Derived : Base { 
+        int derived_marker = 0xD4D4;
+        virtual void anchor() {}
+    };
+    
+    struct Unrelated { virtual ~Unrelated() = default; };
+
+    co_yield nullptr; 
+    
+    //--------------------------------------------------
+    // Scenario 1: static_pointer_cast valid conversion
+    co_yield "Cast shared_ptr<Derived> to it's base class pointer";
+    {
+        auto orig = NAMESPACE_MY make_shared<Derived>();
+        auto base_ptr = NAMESPACE_MY static_pointer_cast<Base>(orig);
+        co_yield{ base_ptr.get() == orig.get(),
+            std::format("Address mismatch! Original: {:x} Cast: {:x}", 
+                        (uintptr_t)orig.get(), (uintptr_t)base_ptr.get()) };
+
+        co_yield{ orig.use_count() == 2 && base_ptr.use_count() == 2,
+            std::format("Bad refcount. Original: {} Cast: {} (expected 2)", 
+                        orig.use_count(), base_ptr.use_count()) };
+
+        co_yield{ base_ptr->base_marker == 0xBA5E,
+            std::format("Base data corrupted. Value: {:x}", 
+                        base_ptr->base_marker) };
+    }
+    
+    co_yield nullptr; // Clear scenario 1
+    
+    //--------------------------------------------------
+    // Scenario 2: dynamic_pointer_cast success case
+    co_yield "Cast shared_ptr<Base> to it's valid derived class pointer";
+    {
+        auto true_derived = NAMESPACE_MY make_shared<Derived>();
+        NAMESPACE_MY shared_ptr<Base> base_ptr = true_derived;
+        
+        auto recast = NAMESPACE_MY dynamic_pointer_cast<Derived>(base_ptr);
+        co_yield{ recast != nullptr,
+            "Nullptr returned for valid dynamic downcast" };
+            
+        co_yield{ recast->derived_marker == 0xD4D4,
+            std::format("Derived data corrupted. Value: {:x}", 
+                        recast->derived_marker) };
+        
+        co_yield{ recast.use_count() == 3 && base_ptr.use_count() == 3,
+            std::format("Bad refcount. cast: {} base: {} (expected 3)", 
+                        recast.use_count(), base_ptr.use_count()) };
+    }
+
+    co_yield nullptr; // Clear scenario 2
+    
+    //--------------------------------------------------
+    // Scenario 3: dynamic_pointer_cast failure case  
+    co_yield "Cast shared_ptr<Base> to it's INVALID derived class pointer";
+    {
+        auto base_ptr = NAMESPACE_MY make_shared<Base>();
+        
+        auto bad_cast = NAMESPACE_MY dynamic_pointer_cast<Derived>(base_ptr);
+        co_yield{ bad_cast == nullptr,
+            "Non-null returned for invalid downcast" };
+        
+        co_yield{ base_ptr.use_count() == 1,
+            std::format("Refcount corrupted. Value: {}", 
+                        base_ptr.use_count()) };
+    }
+
+    co_yield nullptr; // Clear scenario 3
+
+    //--------------------------------------------------
+    // Scenario 4: reinterpret_pointer_cast
+    co_yield "Reinterpret from shared_ptr<int> to shared_ptr<long>";
+    {
+        auto orig = NAMESPACE_MY make_shared<int>(0xCAFE);
+        auto alien_ptr = NAMESPACE_MY reinterpret_pointer_cast<long>(orig);
+        
+        co_yield{ (void*)alien_ptr.get() == (void*)orig.get(),
+            std::format("Address mismatch! Original: {:x} Cast: {:x}", 
+                (uintptr_t)orig.get(), (uintptr_t)alien_ptr.get()) };
+        
+        co_yield{ orig.use_count() == 2 && alien_ptr.use_count() == 2,
+            std::format("Bad refcount. Original: {} Alien: {} (expected 2)",
+                        orig.use_count(), alien_ptr.use_count()) };
+    }
+    
+    co_yield nullptr; // Clear scenario 4
+    
+    //--------------------------------------------------
+    // Scenario 5: const_pointer_cast
+    co_yield "Cast shared_ptr<int> to shared_ptr<const int> by const_pointer_cast";
+    {
+        auto mutable_ptr = NAMESPACE_MY make_shared<int>(0xBEEF);
+        NAMESPACE_MY shared_ptr<const int> const_ptr = mutable_ptr;
+        
+        auto unconst_ptr = NAMESPACE_MY const_pointer_cast<int>(const_ptr);
+        co_yield{ unconst_ptr.get() == mutable_ptr.get(),
+            std::format("Address mismatch after cast in and out. Original: {:x} Dual-Cast: {:x}", 
+                (uintptr_t)mutable_ptr.get(), (uintptr_t)unconst_ptr.get()) };
+            
+        co_yield{ mutable_ptr.use_count() == 3 && 
+                const_ptr.use_count() == 3 && 
+                unconst_ptr.use_count() == 3,
+            std::format("Refcount corruption. Counts(Original: {}, const: {}, Dual-Cast: {}; expected 3)",
+                        mutable_ptr.use_count(), 
+                        const_ptr.use_count(),
+                        unconst_ptr.use_count()) };
+    }
+
+    co_yield nullptr;
+
+    //--------------------------------------------------
+    // Scenario 6: Implicit conversion of unique_ptr from derived to base class
+    {
+        struct Base { 
+            int base_marker = 0xBA5E;
+            virtual ~Base() = default; // Ensure proper cleanup for derived objects
+        };
+        
+        struct Derived : Base { 
+            int derived_marker = 0xD4D4;
+            bool* destructor_called; // Pointer to a flag to track destruction
+            Derived(bool* flag) : destructor_called(flag) {}
+            ~Derived() { *destructor_called = true; } // Set flag on destruction
+        };
+
+        bool derived_destructor_called = false; // Flag to track if Derived destructor is called
+
+        co_yield "Create a unique_ptr<Derived> with a flag to track destruction";
+        auto derived_ptr = NAMESPACE_MY make_unique<Derived>(&derived_destructor_called);
+        derived_ptr->base_marker = 0xBA5E;
+        derived_ptr->derived_marker = 0xD4D4;
+
+        co_yield "Implicitly convert unique_ptr<Derived> to unique_ptr<Base>";
+        NAMESPACE_MY unique_ptr<Base> base_ptr = std::move(derived_ptr);
+        co_yield{ base_ptr && base_ptr->base_marker == 0xBA5E,
+            std::format("Base data corrupted after implicit conversion. Value: {:x} (expected: 0xBA5E)", 
+                        base_ptr ? base_ptr->base_marker : -1) };
+
+        co_yield{ !derived_ptr,
+            std::format("derived_ptr should be empty after move, but it is not.") };
+
+        co_yield "reset base_ptr to trigger destruction";
+        base_ptr.reset();
+        co_yield{ derived_destructor_called,
+            std::format("Derived destructor should be called, but it was not.") };
+    }
+    co_yield nullptr; // Clear scenario 6
+
+    //--------------------------------------------------
+    // Scenario 7: shared_ptr with non-virtual destructor in base class
+    {
+        struct Base { 
+            int base_marker = 0xBA5E;
+            ~Base() = default; // Non-virtual destructor
+        };
+        
+        struct Derived : Base { 
+            int derived_marker = 0xD4D4;
+            bool* destructor_called; // Pointer to a flag to track destruction
+            Derived(bool* flag) : destructor_called(flag) {}
+            ~Derived() { *destructor_called = true; } // Set flag on destruction
+        };
+
+        bool derived_destructor_called = false;
+
+        co_yield "Create a shared_ptr<Derived> with a flag to track destruction";
+        auto derived_ptr = NAMESPACE_MY make_shared<Derived>(&derived_destructor_called);
+        co_yield "and cast it to shared_ptr<Base>";
+        NAMESPACE_MY shared_ptr<Base> base_ptr = derived_ptr;
+
+        co_yield{ base_ptr && base_ptr->base_marker == 0xBA5E,
+            std::format("Base data corrupted after conversion. Value: {:x} (expected: 0xBA5E)", 
+                        base_ptr ? base_ptr->base_marker : -1) };
+
+        co_yield{ derived_ptr.use_count() == 2 && base_ptr.use_count() == 2,
+            std::format("Refcount corrupted after conversion. Derived: {} (expected: 2), Base: {} (expected: 2)", 
+                        derived_ptr.use_count(), base_ptr.use_count()) };
+
+        co_yield "reset the shared_ptr<Derived> and let shared_ptr<Base> manage the object";
+        derived_ptr.reset();
+        co_yield{ derived_ptr.use_count() == 0 && base_ptr.use_count() == 1,
+            std::format("Refcount corrupted after reset. Derived: {} (expected: 0), Base: {} (expected: 1)", 
+                        derived_ptr.use_count(), base_ptr.use_count()) };
+        co_yield{ !derived_destructor_called,
+            std::format("Derived destructor should not be called, but it was.") };
+
+        co_yield "reset the shared_ptr<Base>";
+        base_ptr.reset();
+        co_yield{ derived_destructor_called,
+            std::format("Derived destructor should be called, but it was not.") };
+    }
+    co_yield nullptr; // Clear scenario 7
+#endif
+    co_return;
+}
+        
 
     } // namespace my::test
 } // namespace my
@@ -416,4 +727,6 @@ int main()
     t.new_case(my::test::unique_ptr(), "unique_ptr");
     t.new_case(my::test::shared_ptr(), "shared_ptr");
     t.new_case(my::test::weak_ptr(), "weak_ptr");
+    t.new_case(my::test::enable_shared_from_this(), "enable_shared_from_this");
+    t.new_case(my::test::type_casting(), "type_casting");
 }
