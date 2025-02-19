@@ -3,6 +3,7 @@
 #include <utility>
 #include <exception>
 #include <format>
+#include <cmath>
 
 namespace my
 {
@@ -37,6 +38,8 @@ public:
             current_allocated_bytes += size;
             current_allocations += 1;
             total_allocations += 1;
+        }else{
+	      std::__throw_bad_array_new_length();
         }
         return t;
     }
@@ -86,7 +89,6 @@ private:
     _alloc_proxy& operator=(const _alloc_proxy&) = delete;
 };
 
-std::allocator<
 template <class Ptr, class Size = size_t>
 struct allocation_result {
     Ptr ptr;
@@ -99,9 +101,9 @@ class allocator
 public:
     // Member types
      /// 你需要修改在此处的代码。
-    using value_type = bool;
-    using size_type = bool;
-    using difference_type = bool;
+    using value_type = T;
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
     using propagate_on_container_move_assignment = std::true_type;
 
     // Member functions
@@ -109,19 +111,24 @@ public:
     [[nodiscard]] constexpr T* allocate(size_type n)
     {
         /// 在此处添加你的实现。
-        return nullptr;
+        size_type __n = n;
+	    if (__builtin_mul_overflow(__n, sizeof(T), &__n))
+	      std::__throw_bad_array_new_length();
+        return static_cast<T*>(decltype(this)::_proxy().allocate(n));
     }
     // 分配至少可容纳n个元素，实际上可容纳不小于n的最小的2的幂个元素的未初始化连续存储空间。
     [[nodiscard]] constexpr allocation_result<T*, size_type>
         allocate_at_least(size_type n)
     {
         /// 在此处添加你的实现。
-        return { nullptr, 0 };
+        size_type __n = std::pow(2, n);
+        return {allocate(__n), __n};
     }
     // 回收p所指示的、可容纳n个元素的存储空间。
     constexpr void deallocate(T* p, size_type n)
     {
         /// 在此处添加你的实现。
+        decltype(this)::__proxy().deallocate(p, n);
     }
 
     // 判断同一类模板定义的各分配器实例类型的两个对象是否相等。
@@ -138,22 +145,90 @@ private:
     }
 };
 
-template <typename Alloc>
-struct allocator_traits
+template <typename _Def, template<typename...> class _Op, typename ..._Args>
+    struct __detected_or
+    {
+        using type = _Def;
+        using __is_detected = std::false_type;
+    };
+
+template <typename _Def, template<typename...> class _Op, typename ..._Args>
+    requires requires{typename _Op<_Args...>;}
+    struct __detected_or<_Def, _Op, _Args...>
+    {
+        using type = _Op<_Args...>;
+        using __is_detected = std::true_type;
+    };
+
+template <typename Default, template<typename...> class _Op, typename ..._Args>
+    using __detected_or_t = __detected_or<Default, _Op, _Args...>::type;
+
+
+struct __allocator_traits_base
 {
+protected:
+    template<typename _Tp>
+      using __pointer = typename _Tp::pointer;
+    template<typename _Tp>
+      using __c_pointer = typename _Tp::const_pointer;
+    template<typename _Tp>
+      using __v_pointer = typename _Tp::void_pointer;
+    template<typename _Tp>
+      using __cv_pointer = typename _Tp::const_void_pointer;
+    template<typename _Tp>
+      using __pocca = typename _Tp::propagate_on_container_copy_assignment;
+    template<typename _Tp>
+      using __pocma = typename _Tp::propagate_on_container_move_assignment;
+    template<typename _Tp>
+      using __pocs = typename _Tp::propagate_on_container_swap;
+    template<typename _Tp>
+      using __equal = std::__type_identity<typename _Tp::is_always_equal>;
+    template<typename _Tp>
+      using __diff = typename _Tp::difference_type;
+};
+
+template <typename Alloc> 
+struct allocator_traits : __allocator_traits_base
+{
+public:
     // Member types
     /// 你需要修改在此处的代码。
-    using allocator_type = bool;
-    using value_type = bool;
-    using pointer = bool;
-    using const_pointer = bool;
-    using void_pointer = bool;
-    using const_void_pointer = bool;
-    using difference_type = bool;
-    using size_type = bool;
-    using propagate_on_container_copy_assignment = bool;
-    using propagate_on_container_move_assignment = bool;
-    using propagate_on_container_swap = bool;
+    using allocator_type = Alloc;
+    using value_type = Alloc::value_type;
+    using pointer = __detected_or_t<value_type*, __pointer, Alloc>;
+
+private:
+    template<template<typename> class _Func, typename _Tp>
+    using _Ptr = __detected_or_t<std::pointer_traits<pointer>::template rebind<_Tp>, _Func, allocator_type>;
+
+    // Select _A2::difference_type or pointer_traits<_Ptr>::difference_type
+    template<typename _A2, typename _PtrT>
+    struct _Diff{
+        using type = std::pointer_traits<_PtrT>::difference_type;
+    };
+    template<typename _A2, typename _PtrT> requires requires{typename _A2::difference_type;}  
+    struct _Diff<_A2, _PtrT>{
+        using type  = _A2::difference_type;
+    };
+      // Select _A2::size_type or make_unsigned<_DiffT>::type
+    template<typename _A2, typename _DiffT>requires requires{!typename _A2::size_type;}
+	struct _Size : make_unsigned<_DiffT> { };
+
+      template<typename _A2, typename _DiffT> requires requires{typename _A2::size_type;}
+	struct _Size<_A2, _DiffT>
+	{ using type = typename _A2::size_type; };
+
+public:
+    // Member types
+    /// 你需要修改在此处的代码。
+    using const_pointer = _Ptr<__c_pointer, const value_type>
+    using void_pointer = _Ptr<__v_pointer, void>;
+    using const_void_pointer =_Ptr<__cv_pointer, const void>
+    using difference_type = _Diff<Alloc, pointer> 
+    using size_type = typename _Size<Alloc, difference_type>::type;
+    using propagate_on_container_copy_assignment = __detected_or_t<std::false_type, __pocca, Alloc>;
+    using propagate_on_container_move_assignment = __detected_or_t<std::false_type, __pocma, Alloc>;
+    using propagate_on_container_swap = __detected_or_t<std::false_type, __pocs, Alloc>;
     using is_always_equal = bool;
 
     // Member alias templates
@@ -219,5 +294,7 @@ struct allocator_traits
         /// 在此处添加你的实现。
         return {};
     }
+
+
 };
 }
