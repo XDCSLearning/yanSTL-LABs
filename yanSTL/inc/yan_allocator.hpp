@@ -114,7 +114,7 @@ public:
         size_type __n = n;
 	    if (__builtin_mul_overflow(__n, sizeof(T), &__n))
 	      std::__throw_bad_array_new_length();
-        return static_cast<T*>(decltype(this)::_proxy().allocate(n));
+        return static_cast<T*>(_proxy().allocate(n));
     }
     // 分配至少可容纳n个元素，实际上可容纳不小于n的最小的2的幂个元素的未初始化连续存储空间。
     [[nodiscard]] constexpr allocation_result<T*, size_type>
@@ -128,7 +128,7 @@ public:
     constexpr void deallocate(T* p, size_type n)
     {
         /// 在此处添加你的实现。
-        decltype(this)::__proxy().deallocate(p, n);
+        _proxy().deallocate(p, n);
     }
 
     // 判断同一类模板定义的各分配器实例类型的两个对象是否相等。
@@ -198,8 +198,8 @@ public:
     using pointer = __detected_or_t<value_type*, __pointer, Alloc>;
 
 private:
-    template<template<typename> class _Func, typename _Tp>
-    using _Ptr = __detected_or_t<std::pointer_traits<pointer>::template rebind<_Tp>, _Func, allocator_type>;
+    template<template<typename...> class _Func, typename _Tp>
+    using _Ptr = __detected_or_t<typename std::pointer_traits<pointer>::template rebind<_Tp>, _Func, allocator_type>;
 
     // Select _A2::difference_type or pointer_traits<_Ptr>::difference_type
     template<typename _A2, typename _PtrT>
@@ -211,8 +211,8 @@ private:
         using type  = _A2::difference_type;
     };
       // Select _A2::size_type or make_unsigned<_DiffT>::type
-    template<typename _A2, typename _DiffT>requires requires{!typename _A2::size_type;}
-	struct _Size : make_unsigned<_DiffT> { };
+    template<typename _A2, typename _DiffT>
+	struct _Size : std::make_unsigned<_DiffT> { };
 
       template<typename _A2, typename _DiffT> requires requires{typename _A2::size_type;}
 	struct _Size<_A2, _DiffT>
@@ -221,15 +221,15 @@ private:
 public:
     // Member types
     /// 你需要修改在此处的代码。
-    using const_pointer = _Ptr<__c_pointer, const value_type>
+    using const_pointer = _Ptr<__c_pointer, const value_type>;
     using void_pointer = _Ptr<__v_pointer, void>;
-    using const_void_pointer =_Ptr<__cv_pointer, const void>
-    using difference_type = _Diff<Alloc, pointer> 
+    using const_void_pointer =_Ptr<__cv_pointer, const void>;
+    using difference_type = _Diff<Alloc, pointer>;
     using size_type = typename _Size<Alloc, difference_type>::type;
     using propagate_on_container_copy_assignment = __detected_or_t<std::false_type, __pocca, Alloc>;
     using propagate_on_container_move_assignment = __detected_or_t<std::false_type, __pocma, Alloc>;
     using propagate_on_container_swap = __detected_or_t<std::false_type, __pocs, Alloc>;
-    using is_always_equal = bool;
+    using is_always_equal = true;
 
     // Member alias templates
     /// 你需要修改在此处的代码。
@@ -243,14 +243,20 @@ public:
     [[nodiscard]] static constexpr pointer allocate(Alloc& a, size_type n)
     {
         /// 在此处添加你的实现。
-        return nullptr;
+        return a.allocate(n);
     }
 
     // 申请带提示的内存（如果 allocator 没有该方法，则调用无提示的 allocate）
     [[nodiscard]] static constexpr pointer allocate(Alloc& a, size_type n, const_void_pointer hint)
     {
         /// 在此处添加你的实现。
-        return nullptr;
+        if(requires{
+            a.allocate(n, hint);
+        }){
+            return a.allocate(n, hint);
+        }else{
+            return a.allocate(n);
+        }
     }
 
     // 分配至少可容纳n个元素的未初始化连续存储空间。默认返回{a.allocate(n), n}。
