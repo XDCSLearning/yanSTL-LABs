@@ -3,7 +3,7 @@
 #include "yan_memory.hpp"
 #include <memory>
 
-#define USE_STD
+//#define USE_STD
 
 #ifdef USE_STD
 #define NAMESPACE_MY ::std::
