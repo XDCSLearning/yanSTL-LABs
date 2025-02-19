@@ -19,6 +19,36 @@ namespace my
     namespace test
     {
 
+template <typename T>
+struct custom_allocator {
+    using value_type = T;
+
+    custom_allocator(int* counter = nullptr) : counter(counter) {}
+
+    template <typename U>
+    custom_allocator(const custom_allocator<U>& other) : counter(other.counter) {}
+    
+
+    template <typename U>
+    struct rebind {
+        using other = custom_allocator<U>;
+    };
+
+    T* allocate(std::size_t n) {
+        counter ? (*counter)++ : 0;
+        return static_cast<T*>(::operator new(n * sizeof(T)));
+    }
+
+    void deallocate(T* p, std::size_t n) {
+        counter ? (*counter)-- : 0;
+        ::operator delete(p);
+    }
+
+    int* counter;
+};
+        
+
+
 case_t unique_ptr() {
 #ifdef DISMISS_UNIQUE_PTR
     co_yield { case_t::state::DISMISSED, "test for `unique_ptr` has been dismissed." };
@@ -276,6 +306,34 @@ case_t shared_ptr() {
     }
     co_yield{ int_wrapper::current_object_count == 0,
         std::format("Resource leak detected: `int_wrapper::current_object_count` is `{}` after `p8`/`p9` scope, expected `0`.", int_wrapper::current_object_count) };
+    co_yield nullptr;
+
+    co_yield "Test `allocate_shared` with a custom allocator.";
+    {
+        int alloc_counter = 0; // Track allocations and deallocations
+        custom_allocator<int_wrapper> alloc(&alloc_counter);
+
+        co_yield "Create a `shared_ptr` using `allocate_shared` with a custom allocator.";
+        {
+            auto p11 = NAMESPACE_MY allocate_shared<int_wrapper>(alloc, 123);
+            co_yield{ p11 && *p11 == int_wrapper(123),
+                std::format("`p11` should hold `int_wrapper(123)`, but got `{}`.", p11 ? std::to_string((int)(*p11)) : "null") };
+            co_yield{ p11.use_count() == 1,
+                std::format("`p11.use_count()` should be `1`, but got `{}`.", p11.use_count()) };
+            co_yield{ alloc_counter == 1,
+                std::format("There should be 1 time allocator call, but got `{}` time(s).", alloc_counter) };
+
+            co_yield "Copy `p11` to `p12` to verify reference counting.";
+            NAMESPACE_MY shared_ptr<int_wrapper> p12(p11);
+            co_yield{ p11.use_count() == 2 && p12.use_count() == 2,
+                std::format("After copying, `use_count` should be `2`, but got `p11.use_count()`: `{}`, `p12.use_count()`: `{}`.", p11.use_count(), p12.use_count()) };
+        }
+
+        co_yield{ alloc_counter == 0,
+            std::format("After `p11` and `p12` go out of scope, allocator should deallocate all memory, but got `{}` block(s) still alive.", alloc_counter) };
+        co_yield{ int_wrapper::current_object_count == 0,
+            std::format("Resource leak detected: there is {} objects remaining after `allocate_shared` scope, expected `0`.", int_wrapper::current_object_count) };
+    }
     co_yield nullptr;
 
     bool deleter_called = false;
