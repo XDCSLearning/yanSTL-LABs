@@ -375,6 +375,35 @@ case_t weak_ptr() {
             std::format("After self-assignment, `wp5.expired()` should still be `true`.") };
     }
     co_yield nullptr;
+
+    {
+        co_yield "Create two `shared_ptr`s, `p1` and `p2`, with values `int_wrapper(100)` and `int_wrapper(200)` respectively.";
+        auto p1 = NAMESPACE_MY make_shared<int_wrapper>(100);
+        auto p2 = NAMESPACE_MY make_shared<int_wrapper>(200);
+    
+        co_yield "Create two `weak_ptr`s, `wp1` from `p1` and `wp2` from `p2`.";
+        NAMESPACE_MY weak_ptr<int_wrapper> wp1(p1);
+        NAMESPACE_MY weak_ptr<int_wrapper> wp2(p2);
+    
+        co_yield "Create a third `weak_ptr`, `wp3`, from `p1` to share ownership with `wp1`.";
+        NAMESPACE_MY weak_ptr<int_wrapper> wp3(p1);
+    
+        co_yield "Compare `wp1` and `wp3` using `owner_before` to verify shared ownership.";
+        co_yield{ !wp1.owner_before(wp3) && !wp3.owner_before(wp1),
+            std::format("`wp1` and `wp3` should have the same ownership order, but `owner_before` indicates otherwise.") };
+    
+        co_yield "Compare `wp1` and `p1` using `owner_before` to verify shared ownership between `weak_ptr` and `shared_ptr`.";
+        co_yield{ !wp1.owner_before(p1) && !p1.owner_before(wp1),
+            std::format("`wp1` and `p1` should have the same ownership order, but `owner_before` indicates otherwise.") };
+    
+        co_yield "Compare `wp1` and `wp2` using `owner_before` to check ownership order.";
+        bool wp1_before_wp2 = wp1.owner_before(wp2);
+        bool wp2_before_wp1 = wp2.owner_before(wp1);
+        co_yield{ wp1_before_wp2 != wp2_before_wp1,
+            std::format("`wp1` and `wp2` should have a consistent ownership order, but `owner_before` is inconsistent. wp1_before_wp2: {}, wp2_before_wp1: {}", wp1_before_wp2, wp2_before_wp1) };
+    }
+    co_yield nullptr;
+    
 #endif
     co_return;
 }
@@ -568,11 +597,11 @@ case_t type_casting() {
         co_yield "Implicitly convert unique_ptr<Derived> to unique_ptr<Base>";
         NAMESPACE_MY unique_ptr<Base> base_ptr = std::move(derived_ptr);
         co_yield{ base_ptr && base_ptr->base_marker == 0xBA5E,
-            std::format("Base data corrupted after implicit conversion. Value: {:x}", 
+            std::format("Base data corrupted after implicit conversion. Value: {:x} (expected: 0xBA5E)", 
                         base_ptr ? base_ptr->base_marker : -1) };
 
         co_yield{ !derived_ptr,
-            std::format("derived_ptr should be empty after move.") };
+            std::format("derived_ptr should be empty after move, but it is not.") };
 
         co_yield "reset base_ptr to trigger destruction";
         base_ptr.reset();
@@ -604,17 +633,17 @@ case_t type_casting() {
         NAMESPACE_MY shared_ptr<Base> base_ptr = derived_ptr;
 
         co_yield{ base_ptr && base_ptr->base_marker == 0xBA5E,
-            std::format("Base data corrupted after conversion. Value: {:x}", 
+            std::format("Base data corrupted after conversion. Value: {:x} (expected: 0xBA5E)", 
                         base_ptr ? base_ptr->base_marker : -1) };
 
         co_yield{ derived_ptr.use_count() == 2 && base_ptr.use_count() == 2,
-            std::format("Refcount corrupted after conversion. Derived: {} Base: {}", 
+            std::format("Refcount corrupted after conversion. Derived: {} (expected: 2), Base: {} (expected: 2)", 
                         derived_ptr.use_count(), base_ptr.use_count()) };
 
         co_yield "reset the shared_ptr<Derived> and let shared_ptr<Base> manage the object";
         derived_ptr.reset();
         co_yield{ derived_ptr.use_count() == 0 && base_ptr.use_count() == 1,
-            std::format("Refcount corrupted after reset. Derived: {} Base: {} (expected 0,1)", 
+            std::format("Refcount corrupted after reset. Derived: {} (expected: 0), Base: {} (expected: 1)", 
                         derived_ptr.use_count(), base_ptr.use_count()) };
         co_yield{ !derived_destructor_called,
             std::format("Derived destructor should not be called, but it was.") };
